@@ -1,10 +1,10 @@
-title: Asignaturas 2º ESO
+title: Asignaturas
 url: https://oxidogit.github.io
 baseurl: /markel
 collections:
   subjects:
     output: true
-    permalink: /:name.html
+    permalink: /2eso/:name.html
 defaults:
   - scope:
       path: ""

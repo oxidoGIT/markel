@@ -11,4 +11,4 @@ language: ca
 
 ## Examen Junio 2026
 
-*  [La formació d'Europa medieval](https://oxidogit.github.io/markel/temari-medieval/)
+*  [La formació d'Europa medieval](temari-medieval/)

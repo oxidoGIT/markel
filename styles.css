@@ -96,6 +96,26 @@ h1 {
   font-size: 1.08rem;
 }
 
+.level-note {
+  margin: 24px 0 0;
+}
+
+.level-note a {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: var(--paper);
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.level-note a:hover {
+  background: var(--accent-soft);
+  text-decoration: underline;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -138,6 +158,14 @@ h1 {
   letter-spacing: -0.04em;
 }
 
+.card__description {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .sections,
 .content {
   display: grid;
@@ -153,6 +181,11 @@ h1 {
   margin: 0 0 16px;
   font-size: clamp(1.35rem, 4vw, 1.9rem);
   line-height: 1.08;
+}
+
+.empty-state {
+  margin: 0;
+  color: var(--muted);
 }
 
 .resources {

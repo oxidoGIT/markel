@@ -40,6 +40,8 @@ def html_files() -> list[Path]:
 
 def expected_href(path: Path) -> str:
     relative = PurePosixPath(path.relative_to(ROOT).as_posix())
+    if relative == PurePosixPath("_layouts/subject.html"):
+        return "../favicon.svg"
     if relative.parts[:1] == ("_layouts",):
         return "favicon.svg"
     return "../" * (len(relative.parts) - 1) + "favicon.svg"
