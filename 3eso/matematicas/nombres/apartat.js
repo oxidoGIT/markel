@@ -55,6 +55,7 @@ function render() {
   const currentIndex = apartats.findIndex((item) => item.id === apartat.id);
   const previous = apartats[currentIndex - 1];
   const next = apartats[currentIndex + 1];
+  const pdfHref = `../../../sources/matematicas/nombres/${apartat.file.replace(".html", ".pdf")}`;
 
   app.innerHTML = html`
     <header class="hero">
@@ -68,6 +69,7 @@ function render() {
           <a href="#exemples">Exemples</a>
           <a href="#practica">Exercicis</a>
         </nav>
+        <a class="pdf-callout" href="${pdfHref}" target="_blank" rel="noopener">Obre el PDF de teoria completa</a>
         <div class="progress">
           <div><span id="progress-label">0 exercicis completats</span><strong id="score-label">0 punts</strong></div>
           <div class="progress__track"><span id="progress-bar"></span></div>
