@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ca">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unitat 1 · Nombres</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="nombres.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__inner">
+        <a class="back" href="index.html">← Tornar a Matemàtiques</a>
+        <p class="eyebrow">Matemàtiques · 3r ESO · Unitat 1</p>
+        <h1>Nombres</h1>
+        <p class="hero__intro">
+          Repàs guiat dels nombres enters, decimals, fraccionaris i reals, amb intervals i exercicis autocorregibles.
+        </p>
+        <div class="progress">
+          <div>
+            <span id="progress-label">0 exercicis completats</span>
+            <strong id="score-label">0 punts</strong>
+          </div>
+          <div class="progress__track"><span id="progress-bar"></span></div>
+          <button class="reset-progress" id="reset-progress" type="button">Esborra el progrés</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <nav class="contents" aria-label="Apartats de la unitat">
+        <a href="#enters">Enters</a>
+        <a href="#decimals">Decimals</a>
+        <a href="#errors">Errors</a>
+        <a href="#fraccions">Fraccions</a>
+        <a href="#reals">Reals</a>
+        <a href="#intervals">Intervals</a>
+        <a href="#practica">Exercicis</a>
+      </nav>
+
+      <section class="theory" id="intro">
+        <div>
+          <p class="eyebrow">Idea general</p>
+          <h2>Per què calen tants tipus de nombres?</h2>
+          <p>
+            Cada conjunt de nombres resol una necessitat nova: comptar, indicar deutes o temperatures sota zero,
+            repartir una unitat, treballar amb decimals infinits i descriure intervals de valors.
+          </p>
+        </div>
+        <div class="concept-map" aria-label="Mapa conceptual dels nombres">
+          <div><strong>ℕ</strong><span>Naturals</span></div>
+          <div><strong>ℤ</strong><span>Enters</span></div>
+          <div><strong>ℚ</strong><span>Racionals</span></div>
+          <div><strong>ℝ</strong><span>Reals</span></div>
+        </div>
+      </section>
+
+      <section class="unit-section" id="enters">
+        <p class="eyebrow">Apartat 1</p>
+        <h2>Nombres enters</h2>
+        <div class="summary-grid">
+          <article>
+            <h3>Què són?</h3>
+            <p>Els enters inclouen els naturals, el zero i els nombres negatius. Serveixen per expressar quantitats per sota d'un origen: deutes, soterranis, temperatures negatives o pèrdues.</p>
+          </article>
+          <article>
+            <h3>Com s'ordenen?</h3>
+            <p>A la recta numèrica, com més a la dreta és un nombre, més gran és. Per això −2 és més gran que −5, encara que el 5 sembli més gran si no mires el signe.</p>
+          </article>
+          <article>
+            <h3>Valor absolut</h3>
+            <p>El valor absolut mesura la distància fins al zero i sempre és positiu o zero: |−7| = 7 i |7| = 7.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="unit-section" id="decimals">
+        <p class="eyebrow">Apartat 2</p>
+        <h2>Nombres decimals</h2>
+        <div class="summary-grid">
+          <article>
+            <h3>Decimals exactes</h3>
+            <p>Tenen un nombre finit de xifres decimals, com 3,45 o −0,8.</p>
+          </article>
+          <article>
+            <h3>Decimals periòdics</h3>
+            <p>Tenen infinites xifres però una part es repeteix. Si el període comença just després de la coma és pur; si abans hi ha xifres no repetides és mixt.</p>
+          </article>
+          <article>
+            <h3>No periòdics</h3>
+            <p>Tenen infinites xifres decimals sense repetició periòdica. Alguns exemples apareixen amb π o amb arrels no exactes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="unit-section" id="errors">
+        <p class="eyebrow">Apartat 3</p>
+        <h2>Aproximacions i errors</h2>
+        <div class="method-grid">
+          <article><strong>Truncament</strong><span>Es tallen les xifres a partir d'una posició. 32,567 a les centèsimes és 32,56.</span></article>
+          <article><strong>Arrodoniment</strong><span>Es mira la xifra següent: si és 5 o més, pugem una unitat. 587,654 a les dècimes és 587,7.</span></article>
+          <article><strong>Error absolut</strong><span>Ea = |valor real − valor aproximat|. Mesura la diferència directa.</span></article>
+          <article><strong>Error relatiu</strong><span>Er = Ea ÷ valor real. Serveix per comparar errors en magnituds diferents.</span></article>
+        </div>
+      </section>
+
+      <section class="unit-section" id="fraccions">
+        <p class="eyebrow">Apartats 4, 5 i 6</p>
+        <h2>Fraccions i decimals</h2>
+        <div class="summary-grid">
+          <article>
+            <h3>Concepte</h3>
+            <p>Una fracció representa una divisió, una part d'una unitat o un operador. Per exemple, 3/4 de 100 és 75.</p>
+          </article>
+          <article>
+            <h3>Tipus</h3>
+            <p>Una fracció és pròpia si el numerador és més petit que el denominador, impròpia si és més gran i equivalent a un enter si el numerador és múltiple del denominador.</p>
+          </article>
+          <article>
+            <h3>Equivalència</h3>
+            <p>Amplificar o simplificar permet obtenir fraccions equivalents. Les operacions finals s'han de deixar en fracció irreductible.</p>
+          </article>
+          <article>
+            <h3>Operacions</h3>
+            <p>Per sumar o restar cal denominador comú. Per multiplicar es multiplica numerador amb numerador i denominador amb denominador. Per dividir, es multiplica per la inversa.</p>
+          </article>
+          <article>
+            <h3>Fracció a decimal</h3>
+            <p>Es divideix numerador entre denominador. Si el denominador irreductible només té factors 2 i 5, el decimal és exacte; si no, és periòdic.</p>
+          </article>
+          <article>
+            <h3>Decimal a fracció</h3>
+            <p>En decimals exactes, el denominador és 10, 100, 1000... En periòdics, es resten expressions per eliminar el període.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="unit-section" id="reals">
+        <p class="eyebrow">Apartat 7</p>
+        <h2>Nombres reals</h2>
+        <div class="summary-grid">
+          <article>
+            <h3>Racionals</h3>
+            <p>Són els nombres que es poden escriure com una fracció: naturals, enters, fraccions i decimals exactes o periòdics.</p>
+          </article>
+          <article>
+            <h3>Irracionals</h3>
+            <p>No es poden escriure com una fracció. Tenen decimals infinits no periòdics, com π o √2.</p>
+          </article>
+          <article>
+            <h3>Representació</h3>
+            <p>Els irracionals es poden aproximar amb decimals. Algunes arrels es poden construir de manera exacta amb triangles rectangles i el teorema de Pitàgores.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="unit-section" id="intervals">
+        <p class="eyebrow">Apartat 8 i ampliació</p>
+        <h2>Intervals, semirectes i entorns</h2>
+        <div class="method-grid">
+          <article><strong>Interval obert</strong><span>(a, b): no inclou els extrems. Equival a a &lt; x &lt; b.</span></article>
+          <article><strong>Interval tancat</strong><span>[a, b]: inclou els dos extrems. Equival a a ≤ x ≤ b.</span></article>
+          <article><strong>Semiobert</strong><span>[a, b) o (a, b]: inclou només un extrem.</span></article>
+          <article><strong>Semirecta</strong><span>(a, +∞), [a, +∞), (−∞, b) o (−∞, b]. L'infinit sempre va amb parèntesi.</span></article>
+          <article><strong>Unió</strong><span>Agrupa tots els punts que pertanyen a un interval o a l'altre.</span></article>
+          <article><strong>Intersecció</strong><span>Conserva només la part comuna entre intervals.</span></article>
+        </div>
+      </section>
+
+      <section class="unit-section synthesis" id="sintesi">
+        <p class="eyebrow">Síntesi</p>
+        <h2>El mínim que cal dominar</h2>
+        <ol>
+          <li>Distingir enters, decimals, fraccions, racionals, irracionals i reals.</li>
+          <li>Ordenar nombres a la recta numèrica i comparar fraccions amb denominador comú o decimals.</li>
+          <li>Aproximar per truncament i arrodoniment, indicant si és per defecte o per excés.</li>
+          <li>Calcular error absolut i error relatiu.</li>
+          <li>Operar amb fraccions respectant la jerarquia d'operacions.</li>
+          <li>Passar de fracció a decimal i de decimal exacte o periòdic a fracció generatriu.</li>
+          <li>Escriure intervals i semirectes en llenguatge algebraic, notació d'interval i recta.</li>
+        </ol>
+      </section>
+
+      <section class="unit-section" id="practica">
+        <p class="eyebrow">Pràctica</p>
+        <h2>Exercicis autocorregibles</h2>
+        <p class="level__intro">Cada exercici es corregeix per separat. Fes servir les pistes només quan et quedis encallat.</p>
+        <div class="exercise-grid" id="exercise-grid"></div>
+      </section>
+    </main>
+
+    <template id="exercise-template">
+      <article class="exercise">
+        <div class="exercise__top">
+          <span class="exercise__number"></span>
+          <span class="exercise__tag"></span>
+        </div>
+        <h3 class="exercise__title"></h3>
+        <p class="exercise__prompt"></p>
+        <div class="answer"></div>
+        <div class="exercise__actions">
+          <button class="button check" type="button">Comprova</button>
+          <button class="button button--soft hint" type="button">Pista</button>
+          <button class="button button--ghost solution" type="button">Solució</button>
+        </div>
+        <p class="feedback" role="status"></p>
+        <div class="explanation"></div>
+      </article>
+    </template>
+
+    <script src="nombres.js"></script>
+  </body>
+</html>
