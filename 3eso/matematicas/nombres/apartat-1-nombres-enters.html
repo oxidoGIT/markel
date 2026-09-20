@@ -1,1 +1,74 @@
-<!doctype html><html lang="ca"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Nombres enters · Unitat 1</title><link rel="icon" href="../../../favicon.svg" type="image/svg+xml" /><link rel="stylesheet" href="apartat.css" /></head><body data-apartat="enters"><div id="app"><p><a href="../../../sources/matematicas/nombres/apartat-1-nombres-enters.pdf">PDF de teoria completa</a></p></div><script src="apartats-data.js"></script><script src="apartat.js"></script></body></html>
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nombres enters per a 3r ESO: recta numèrica, signes, operacions combinades i 32 exercicis amb pistes i resolucions.">
+  <title>Nombres enters · Matemàtiques 3r ESO</title>
+  <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="enters.css">
+  <script src="enters-data.js" defer></script>
+  <script src="enters.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contingut">Salta al contingut</a>
+  <header class="page-head"><div class="wrap">
+    <nav class="breadcrumbs" aria-label="Fil d’Ariadna"><a href="../../index.html">3r ESO</a><span>/</span><a href="../index.html">Matemàtiques</a><span>/</span><a href="index.html">Unitat 1 · Nombres</a></nav>
+    <div class="heading-row"><div><p class="eyebrow">APARTAT 01</p><h1>Nombres enters</h1><p class="subtitle">Entendre els signes. Calcular amb criteri.</p></div><a class="pdf-link" href="../../../sources/matematicas/nombres/apartat-1-nombres-enters.pdf" target="_blank" rel="noopener">↓ Teoria en PDF</a></div>
+    <nav class="top-nav" aria-label="Seccions"><a href="#teoria">Teoria</a><a href="#laboratori">Recta numèrica</a><a href="#exemples">Exemples resolts</a><a href="#practica">Pràctica · 32 exercicis</a></nav>
+  </div></header>
+  <main id="contingut" class="wrap">
+    <div class="reading-layout" id="teoria">
+      <aside class="contents"><p class="eyebrow">EN AQUEST APARTAT</p><nav aria-label="Índex de teoria"><a href="#ordre">01 · Ordre i distància</a><a href="#sumes">02 · Sumar i restar</a><a href="#productes">03 · Multiplicar i dividir</a><a href="#jerarquia">04 · Parèntesis i àlgebra</a></nav></aside>
+      <div class="reading">
+        <section id="ordre" class="lesson"><span class="section-number">01</span><h2>Ordre, oposat i valor absolut</h2>
+          <p>Els <strong>nombres enters</strong> són …, −3, −2, −1, 0, 1, 2, 3, … i formen el conjunt <strong>ℤ</strong>. El signe expressa la posició respecte d’un origen: un saldo de −8 € és un deute; una temperatura de −4 °C és quatre graus sota zero. El zero no és positiu ni negatiu.</p>
+          <p>A la recta, els nombres creixen cap a la dreta: <strong>−8 &lt; −3 &lt; 0 &lt; 4</strong>. Entre dos negatius és més gran el que és més a prop del zero.</p>
+          <figure class="number-figure"><svg viewBox="0 0 680 112" role="img" aria-labelledby="order-title"><title id="order-title">Recta numèrica: menys vuit, menys tres, zero i quatre, d’esquerra a dreta.</title><path d="M30 55H652l-9-5m9 5-9 5" fill="none" stroke="currentColor" stroke-width="2"/><g class="ticks"><path d="M70 48v14m120-14v14m80-14v14m120-14v14m160-14v14"/></g><g class="plot-label"><text x="70" y="87">−8</text><text x="190" y="87">−5</text><text x="270" y="87">−3</text><text x="390" y="87">0</text><text x="550" y="87">4</text></g><g fill="#15785c"><circle cx="70" cy="55" r="5"/><circle cx="270" cy="55" r="5"/><circle cx="390" cy="55" r="5"/><circle cx="550" cy="55" r="5"/></g><text x="420" y="25" class="svg-caption">més gran →</text></svg></figure>
+          <dl class="concept-pair"><div><dt>Oposat: canvia el signe</dt><dd>L’oposat de <i>a</i> és −<i>a</i>. L’oposat de −7 és 7. Dos oposats sumen zero: −7 + 7 = 0.</dd></div><div><dt>Valor absolut: mesura una distància</dt><dd>|−7| = 7 i |7| = 7. Sempre és positiu o zero. No és el mateix que l’oposat: l’oposat de 7 és −7.</dd></div></dl>
+          <p>La distància entre <i>a</i> i <i>b</i> és <strong>|b − a|</strong>. Entre −6 i 9 hi ha |9 − (−6)| = 15 unitats. En canvi, el <em>canvi</em> de 9 a −6 és −6 − 9 = −15: el canvi té signe; la distància no.</p>
+        </section>
+        <section id="sumes" class="lesson"><span class="section-number">02</span><h2>Sumar i restar amb signes</h2>
+          <p><strong>Sumar un positiu</strong> desplaça cap a la dreta; <strong>sumar un negatiu</strong>, cap a l’esquerra. Amb el mateix signe, suma els valors absoluts i conserva el signe: −8 + (−5) = −13. Amb signes diferents, resta els valors absoluts i conserva el signe del que en té el més gran: −8 + 13 = 5.</p>
+          <div class="rule"><strong>Restar és sumar l’oposat</strong><span class="math">a − b = a + (−b)</span><p>−5 − (−12) = −5 + 12 = 7. El primer menys és una resta; el segon forma part del nombre −12.</p></div>
+          <p>En una suma llarga pots agrupar positius i negatius: <span class="math">−7 + 12 − 9 + 4 = (12 + 4) − (7 + 9) = 0</span>. Per fer-ho amb restes, interpreta primer cada resta com una suma de l’oposat.</p>
+          <p class="warning"><strong>No barregis regles:</strong> «dos negatius donen positiu» s’aplica al producte o al quocient. La suma (−3) + (−4) és −7.</p>
+        </section>
+        <section id="laboratori" class="lab lesson"><p class="eyebrow">EXPLORA</p><h2>Un càlcul, un desplaçament</h2>
+          <div class="lab-controls"><label>Punt inicial <input id="start" type="number" min="-8" max="8" value="-5"></label><label>Operació <select id="operation"><option value="add">Sumar</option><option value="subtract" selected>Restar</option></select></label><label>Nombre <input id="operand" type="number" min="-8" max="8" value="-3"></label></div>
+          <p id="lab-error" class="feedback" role="status"></p><div id="lab-plot" class="number-figure"></div><p id="lab-result" class="lab-result" aria-live="polite"></p>
+        </section>
+        <section id="productes" class="lesson"><span class="section-number">03</span><h2>Multiplicar i dividir</h2>
+          <p>Calcula amb els valors absoluts i determina el signe: <strong>signes iguals, positiu; signes diferents, negatiu</strong>. Per exemple, (−6) · 8 = −48 i (−72) : (−9) = 8.</p>
+          <table><caption>Signe del producte o del quocient</caption><thead><tr><th scope="col">Primer nombre</th><th scope="col">Segon nombre</th><th scope="col">Resultat</th></tr></thead><tbody><tr><td>+</td><td>+</td><td>+</td></tr><tr><td>+</td><td>−</td><td>−</td></tr><tr><td>−</td><td>+</td><td>−</td></tr><tr><td>−</td><td>−</td><td>+</td></tr></tbody></table>
+          <p>La regla és coherent amb la distributiva: 0 = (−3) · [4 + (−4)] = −12 + (−3) · (−4). Per obtenir zero, <strong>(−3) · (−4) ha de valer 12</strong>.</p>
+          <p>En un producte sense factors nuls, un nombre <strong>parell de factors negatius</strong> dona positiu; un nombre imparell, negatiu. Si hi ha un factor zero, tot el producte val zero.</p>
+          <p class="warning"><strong>Divisió:</strong> no es pot dividir entre zero. Els enters no sempre donen un quocient enter: 5 : 2 = 2,5. En divisions encadenades es calcula d’esquerra a dreta: (−96) : 8 : (−3) = −12 : (−3) = 4.</p>
+        </section>
+        <section id="jerarquia" class="lesson"><span class="section-number">04</span><h2>Parèntesis, jerarquia i àlgebra</h2>
+          <ol class="hierarchy"><li><strong>Parèntesis i claudàtors</strong><span>Comença pels més interiors.</span></li><li><strong>Productes i divisions</strong><span>Mateixa prioritat, d’esquerra a dreta.</span></li><li><strong>Sumes i restes</strong><span>Mateixa prioritat, d’esquerra a dreta.</span></li></ol>
+          <p>La <strong>distributiva</strong> multiplica tots els termes del parèntesi: a(b + c) = ab + ac. Així, −3(x − 4) = −3x + 12. Un menys davant d’un parèntesi equival a multiplicar per −1: <strong>−(a − b) = −a + b</strong>.</p>
+          <p>Per resoldre una equació, aplica la mateixa operació als dos membres. En <span class="math">−3x + 5 = 20</span>, resta 5: −3x = 15; divideix entre −3: <strong>x = −5</strong>. Comprova: −3 · (−5) + 5 = 20.</p>
+        </section>
+      </div>
+    </div>
+    <section id="exemples" class="examples-section"><p class="eyebrow">DEL CÀLCUL AL RAONAMENT</p><h2>Quatre exemples, pas a pas</h2><div class="examples">
+      <article><h3>Restar un resultat negatiu</h3><p class="math">−4 − (7 − 12)</p><details><summary>Veure la resolució</summary><ol><li>Parèntesi: 7 − 12 = −5.</li><li>Resta de negatiu: −4 − (−5) = −4 + 5.</li><li>Resultat: <strong>1</strong>.</li></ol></details></article>
+      <article><h3>Parèntesis encaixats</h3><p class="math">18 − [7 − (3 − 11)]</p><details><summary>Veure la resolució</summary><ol><li>Interior: 3 − 11 = −8.</li><li>Claudàtor: 7 − (−8) = 15.</li><li>Resta exterior: 18 − 15 = <strong>3</strong>.</li></ol></details></article>
+      <article><h3>Distributiva amb un negatiu</h3><p class="math">−2(3x − 4) + 5x</p><details><summary>Veure la resolució</summary><ol><li>Distribueix: −6x + 8 + 5x.</li><li>Agrupa termes amb x: (−6 + 5)x + 8.</li><li>Expressió equivalent: <strong>−x + 8</strong>.</li><li>Amb x = −3, dona 11 en totes dues formes.</li></ol></details></article>
+      <article><h3>Distància i desplaçament</h3><p>Un ascensor passa de la planta 6 a la −2.</p><details><summary>Veure la resolució</summary><ol><li>Canvi: final − inicial = −2 − 6 = <strong>−8 plantes</strong>.</li><li>Distància: |−8| = <strong>8 plantes</strong>.</li><li>El signe indica que baixa; la distància és positiva.</li></ol></details></article>
+    </div></section>
+    <section id="practica" class="practice-section"><div class="section-heading"><div><p class="eyebrow">PRÀCTICA GRADUADA</p><h2>De la recta a l’àlgebra</h2></div><div class="progress-summary"><strong id="progress-label">0 de 32 resolts</strong><progress id="progress" max="32" value="0" aria-label="Exercicis resolts"></progress><small id="assisted-label">0 solucions consultades</small></div></div>
+      <noscript><p>Activa JavaScript per fer els exercicis interactius. La teoria i els exemples continuen disponibles.</p></noscript>
+      <div id="practice-app" hidden>
+        <div class="practice-toolbar"><fieldset class="levels"><legend class="sr-only">Nivell de dificultat</legend><label><input type="radio" name="level" value="0" checked><span>1 · Fonaments</span></label><label><input type="radio" name="level" value="1"><span>2 · Càlcul</span></label><label><input type="radio" name="level" value="2"><span>3 · Combinades</span></label><label><input type="radio" name="level" value="3"><span>4 · Àlgebra i reptes</span></label></fieldset><label class="pending"><input id="pending-only" type="checkbox">Només pendents</label></div>
+        <nav id="exercise-map" aria-label="Exercicis del nivell"></nav><div id="exercise-host"></div>
+        <div class="practice-footer"><button type="button" id="previous" aria-label="Exercici anterior" title="Exercici anterior">←</button><span id="position"></span><button type="button" id="next" aria-label="Exercici següent" title="Exercici següent">→</button><button type="button" id="reset-open" class="text-button">Reinicia el progrés</button></div>
+        <p id="storage-note" class="muted" role="status"></p>
+      </div>
+    </section>
+    <nav class="pager" aria-label="Apartats"><a href="index.html">← Unitat 1 · Nombres</a><a href="apartat-2-nombres-decimals.html">02 · Nombres decimals →</a></nav>
+  </main>
+  <dialog id="reset-dialog"><h2>Reiniciar la pràctica?</h2><p>S’esborraran les respostes, les pistes i el progrés d’aquests 32 exercicis en aquest navegador.</p><form method="dialog"><button value="cancel">Conserva el progrés</button><button value="reset" class="danger">Reinicia</button></form></dialog>
+</body>
+</html>
