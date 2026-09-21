@@ -23,7 +23,7 @@
   let current = exercises.findIndex(ex => ex.id === saved?.current);
   if (current < 0) current = 0;
   let level = exercises[current].level;
-  const levels = ["Fonaments", "Càlcul", "Combinades", "Àlgebra i reptes"];
+  const levels = lesson?.levels || ["Fonaments", "Càlcul", "Combinades", "Àlgebra i reptes"];
   const pending = () => $("#pending-only").checked;
   const candidates = () => exercises.map((ex,i) => i).filter(i => exercises[i].level === level && (!pending() || !records[exercises[i].id].solved));
   const activeList = () => [...new Set([...candidates(), ...(current >= 0 && exercises[current].level === level ? [current] : [])])].sort((a,b) => a-b);
