@@ -1,1 +1,101 @@
-<!doctype html><html lang="ca"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Nombres decimals · Unitat 1</title><link rel="icon" href="../../../favicon.svg" type="image/svg+xml" /><link rel="stylesheet" href="apartat.css" /></head><body data-apartat="decimals"><div id="app"><p><a href="../../../sources/matematicas/nombres/apartat-2-nombres-decimals.pdf">PDF de teoria completa</a></p></div><script src="apartats-data.js"></script><script src="apartat.js"></script></body></html>
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nombres decimals per a 3r ESO: valor posicional, classificació, operacions i 32 exercicis graduats amb resolucions.">
+  <title>Nombres decimals · Matemàtiques 3r ESO</title>
+  <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="enters.css">
+  <link rel="stylesheet" href="decimals.css">
+  <script src="decimals-data.js" defer></script>
+  <script src="decimals.js" defer></script>
+  <script src="enters.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contingut">Salta al contingut</a>
+  <header class="page-head"><div class="wrap">
+    <nav class="breadcrumbs" aria-label="Fil d’Ariadna"><a href="../../../index.html">Inici</a><span>/</span><a href="../../index.html">3r ESO</a><span>/</span><a href="../index.html">Matemàtiques</a><span>/</span><a href="index.html">Unitat 1 · Nombres</a><span>/</span><span aria-current="page">Nombres decimals</span></nav>
+    <div class="heading-row"><div><p class="eyebrow">APARTAT 02</p><h1>Nombres decimals</h1><p class="subtitle">Cada xifra al seu lloc. Cada operació amb sentit.</p></div><a class="pdf-link" href="../../../sources/matematicas/nombres/apartat-2-nombres-decimals.pdf" target="_blank" rel="noopener">↓ Teoria en PDF</a></div>
+    <nav class="top-nav" aria-label="Seccions"><a href="#teoria">Teoria</a><a href="#laboratori">Centèsimes i recta</a><a href="#exemples">Exemples resolts</a><a href="#practica">Pràctica · 32 exercicis</a></nav>
+  </div></header>
+  <main id="contingut" class="wrap">
+    <div class="reading-layout" id="teoria">
+      <aside class="contents"><p class="eyebrow">EN AQUEST APARTAT</p><nav aria-label="Índex de teoria"><a href="#posicions">01 · Valor posicional</a><a href="#tipus">02 · Tipus de decimals</a><a href="#ordre">03 · Comparar i ordenar</a><a href="#operacions">04 · Operacions decimals</a><a href="#algebra">05 · Parèntesis i àlgebra</a></nav></aside>
+      <div class="reading">
+        <section id="posicions" class="lesson"><span class="section-number">01</span><h2>Una unitat, deu dècimes, cent centèsimes</h2>
+          <p>La coma separa la <strong>part entera</strong> de la <strong>part decimal</strong>. Cada posició val una desena part de la que té a l’esquerra: una unitat són deu dècimes; una dècima són deu centèsimes; una centèsima són deu mil·lèsimes.</p>
+          <table class="place-table"><caption>El valor de cada xifra de 23,407</caption><thead><tr><th scope="col">Desenes</th><th scope="col">Unitats</th><th scope="col">Dècimes</th><th scope="col">Centèsimes</th><th scope="col">Mil·lèsimes</th></tr></thead><tbody><tr><td>2</td><td>3</td><td>4</td><td>0</td><td>7</td></tr><tr><td>20</td><td>3</td><td>0,4</td><td>0</td><td>0,007</td></tr></tbody></table>
+          <p class="math">23,407 = 20 + 3 + 0,4 + 0,007</p>
+          <p>El 7 no val set unitats, sinó <strong>set mil·lèsimes</strong>. El zero de les centèsimes és necessari: 23,407 i 23,47 són nombres diferents.</p>
+          <div class="rule"><strong>Zeros finals: el valor no canvia</strong><span class="math">2,5 = 2,50 = 2,500</span><p>Cinc dècimes equivalen a cinquanta centèsimes o cinc-centes mil·lèsimes. En canvi, 2,05 no és igual a 2,5: cinc centèsimes no són cinc dècimes.</p></div>
+        </section>
+        <section id="tipus" class="lesson"><span class="section-number">02</span><h2>Decimals exactes, periòdics i no periòdics</h2>
+          <dl class="decimal-types">
+            <div><dt>Exacte</dt><dd>Té un nombre finit de xifres decimals: <strong>0,75</strong> o <strong>−13,408</strong>. Es pot continuar amb zeros sense canviar-ne el valor.</dd></div>
+            <div><dt>Periòdic pur</dt><dd>Un bloc es repeteix indefinidament des de la primera xifra decimal: <strong>4,<span class="period">12</span> = 4,121212…</strong>. El període mínim és 12.</dd></div>
+            <div><dt>Periòdic mixt</dt><dd>Hi ha xifres decimals abans de la repetició: <strong>5,12<span class="period">7</span> = 5,127777…</strong>. L’anteperíode és 12 i el període mínim és 7.</dd></div>
+            <div><dt>Infinit no periòdic</dt><dd>No s’acaba ni hi ha cap bloc que es repeteixi indefinidament a partir d’un punt. És el cas de <strong>π</strong> o del nombre 0,1010010001… construït afegint cada vegada un zero més entre dos uns.</dd></div>
+          </dl>
+          <p>La barra cobreix <strong>només el període</strong>, és a dir, el bloc més curt que es repeteix. En 7,0<span class="period">34</span>, el 7 és la part entera; el 0, l’anteperíode; i 34, el període.</p>
+          <p class="warning"><strong>Unes quantes xifres no demostren una repetició infinita.</strong> Cal que l’enunciat indiqui el patró o que el procediment el justifiqui. En una divisió d’enters, repetir un residu fa repetir les xifres del quocient.</p>
+        </section>
+        <section id="ordre" class="lesson"><span class="section-number">03</span><h2>Comparar xifres del mateix ordre</h2>
+          <p>Entre dos decimals positius, compara primer la part entera. Si coincideix, compara dècimes, després centèsimes, i així successivament fins a trobar la primera diferència. Pots afegir zeros <strong>al final</strong> per fer visibles les posicions.</p>
+          <div class="rule"><strong>Més xifres no vol dir més valor</strong><span class="math">3,080 &lt; 3,102 &lt; 3,800</span><p>A 3,080 i 3,102, les unitats coincideixen; a les dècimes, 0 &lt; 1. No cal comparar les xifres següents.</p></div>
+          <p>Entre dos negatius, l’ordre dels valors absoluts s’inverteix: <strong>−2,50 &lt; −2,35</strong>. A la recta numèrica, el nombre més gran sempre és el que queda més a la dreta.</p>
+          <p>Entre dos decimals diferents sempre podem trobar-ne un altre. Per exemple, la mitjana de 0,4 i 0,5 és (0,4 + 0,5) : 2 = <strong>0,45</strong>, que queda entre tots dos.</p>
+        </section>
+        <section id="laboratori" class="lab lesson"><p class="eyebrow">EXPLORA</p><h2>La mateixa quantitat, dues representacions</h2>
+          <p>Cada quadradet és una centèsima de la unitat. Deu quadradets formen una dècima; cent quadradets, una unitat.</p>
+          <label class="slider-label" for="hundredths">Centèsimes: <output id="hundredths-value" for="hundredths">37</output></label>
+          <input id="hundredths" type="range" min="0" max="100" step="1" value="37">
+          <div id="decimal-model" class="decimal-model"></div>
+          <p id="decimal-result" class="lab-result" aria-live="polite"></p>
+          <noscript><p>37 centèsimes = 0,37 = 3 dècimes i 7 centèsimes.</p></noscript>
+        </section>
+        <section id="operacions" class="lesson"><span class="section-number">04</span><h2>Calcular sense perdre el valor de les xifres</h2>
+          <h3>Sumar i restar</h3><p>Alinea les comes, de manera que cada columna contingui xifres del mateix ordre. Completa amb zeros quan convingui. Les regles dels signes són les mateixes que amb els enters.</p>
+          <div class="written-sums"><figure><pre aria-label="13,45 més 2,80 és 16,25">  13,45
++  2,80
+-------
+  16,25</pre><figcaption>Les comes, a la mateixa columna.</figcaption></figure><figure><pre aria-label="20,00 menys 7,36 és 12,64">  20,00
+−  7,36
+-------
+  12,64</pre><figcaption>20 = 20,00.</figcaption></figure></div>
+          <h3>Multiplicar</h3><p>Multiplica sense comes i situa’n una al resultat perquè tingui tantes xifres decimals com en tenen <strong>els dos factors en total</strong>. Si falten xifres, completa amb zeros a l’esquerra de la part decimal.</p>
+          <p class="math">0,08 · 0,04 = 0,0032</p><p>8 · 4 = 32, però hi ha 2 + 2 = 4 xifres decimals. El valor posicional ho explica: centèsimes per centèsimes són deumil·lèsimes.</p>
+          <h3>Dividir</h3><p>Multiplica dividend i divisor per la mateixa potència de deu fins que el divisor sigui enter. <strong>El quocient no canvia</strong>: si apliques el mateix factor no nul als dos termes d’una divisió, mantens la seva proporció.</p>
+          <div class="rule"><strong>Transforma els dos nombres</strong><span class="math">0,72 : 0,06 = 72 : 6 = 12</span><p>Tots dos s’han multiplicat per 100. Comprova el resultat: 12 · 0,06 = 0,72. Mai no es pot dividir entre zero.</p></div>
+          <h3>Multiplicar o dividir per 10, 100, 1000…</h3><p>Multiplicar per 10 fa que cada xifra valgui deu vegades més; dividir per 10 fa que valgui deu vegades menys. Per 100 o 1000, el canvi és de dues o tres posicions.</p>
+          <p class="math">0,0475 · 1000 = 47,5<br>583,2 : 100 = 5,832</p>
+          <p class="warning"><strong>Comprova la mida del resultat.</strong> Amb nombres positius, multiplicar per un nombre entre 0 i 1 disminueix el valor; dividir-hi l’augmenta. Per exemple, 6 · 0,5 = 3, però 6 : 0,5 = 12.</p>
+        </section>
+        <section id="algebra" class="lesson"><span class="section-number">05</span><h2>La coma no canvia les regles</h2>
+          <ol class="hierarchy"><li><strong>Parèntesis i claudàtors</strong><span>De dins cap a fora.</span></li><li><strong>Productes i divisions</strong><span>D’esquerra a dreta si tenen la mateixa prioritat.</span></li><li><strong>Sumes i restes</strong><span>Al final, també d’esquerra a dreta.</span></li></ol>
+          <p>La distributiva continua sent vàlida: <strong>0,3(x − 2) = 0,3x − 0,6</strong>. Només es poden sumar directament termes semblants: 0,3x + 0,5x = 0,8x, però 0,3x + 0,5 no es redueix a 0,8x.</p>
+          <p>En una equació aplica la mateixa operació als dos membres. Pots eliminar els decimals multiplicant <strong>tots els termes dels dos membres</strong> per 10, 100… Per exemple, 0,2x + 0,35 = 1,15 equival a 20x + 35 = 115; aleshores 20x = 80 i <strong>x = 4</strong>.</p>
+          <p>Conserva els valors exactes durant el càlcul. Si cal arrodonir, fes-ho al final amb la precisió demanada; les aproximacions i els errors es treballen a l’apartat següent.</p>
+        </section>
+      </div>
+    </div>
+    <section id="exemples" class="examples-section"><p class="eyebrow">DEL CÀLCUL AL RAONAMENT</p><h2>Quatre exemples, pas a pas</h2><div class="examples">
+      <article><h3>El divisor té decimals</h3><p class="math">4,68 : 0,12</p><details><summary>Veure la resolució</summary><ol><li>Multiplica tots dos nombres per 100: 468 : 12.</li><li>468 : 12 = <strong>39</strong>.</li><li>Comprovació: 39 · 0,12 = 4,68.</li></ol></details></article>
+      <article><h3>Una resta després del producte</h3><p class="math">5,2 − 1,5 · (2,4 − 0,8)</p><details><summary>Veure la resolució</summary><ol><li>Parèntesi: 2,4 − 0,8 = 1,6.</li><li>Producte: 1,5 · 1,6 = 2,4.</li><li>Resta: 5,2 − 2,4 = <strong>2,8</strong>.</li></ol></details></article>
+      <article><h3>Un negatiu davant del parèntesi</h3><p class="math">−0,4(2x − 1,5) + 0,3x</p><details><summary>Veure la resolució</summary><ol><li>Distribueix: −0,8x + 0,6 + 0,3x.</li><li>Agrupa les x: (−0,8 + 0,3)x + 0,6.</li><li>Resultat: <strong>−0,5x + 0,6</strong>.</li><li>Amb x = 2, totes dues expressions valen −0,4.</li></ol></details></article>
+      <article><h3>Una equació sense comes</h3><p class="math">0,25x − 0,6 = 1,15</p><details><summary>Veure la resolució</summary><ol><li>Multiplica tots els termes per 100: 25x − 60 = 115.</li><li>Suma 60: 25x = 175. Divideix entre 25: <strong>x = 7</strong>.</li><li>Comprovació: 0,25 · 7 − 0,6 = 1,75 − 0,6 = 1,15.</li></ol></details></article>
+    </div></section>
+    <section id="practica" class="practice-section"><div class="section-heading"><div><p class="eyebrow">PRÀCTICA GRADUADA</p><h2>Del valor posicional a l’àlgebra</h2></div><div class="progress-summary"><strong id="progress-label">0 de 32 resolts</strong><progress id="progress" max="32" value="0" aria-label="Exercicis resolts"></progress><small id="assisted-label">0 solucions consultades</small></div></div>
+      <noscript><p>Activa JavaScript per fer els exercicis interactius. La teoria i els exemples continuen disponibles.</p></noscript>
+      <div id="practice-app" hidden>
+        <div class="practice-toolbar"><fieldset class="levels"><legend class="sr-only">Nivell de dificultat</legend><label><input type="radio" name="level" value="0" checked><span>1 · Fonaments</span></label><label><input type="radio" name="level" value="1"><span>2 · Càlcul</span></label><label><input type="radio" name="level" value="2"><span>3 · Combinades</span></label><label><input type="radio" name="level" value="3"><span>4 · Àlgebra i reptes</span></label></fieldset><label class="pending"><input id="pending-only" type="checkbox">Només pendents</label></div>
+        <nav id="exercise-map" aria-label="Exercicis del nivell"></nav><div id="exercise-host"></div>
+        <div class="practice-footer"><button type="button" id="previous" aria-label="Exercici anterior" title="Exercici anterior">←</button><span id="position"></span><button type="button" id="next" aria-label="Exercici següent" title="Exercici següent">→</button><button type="button" id="reset-open" class="text-button">Reinicia el progrés</button></div>
+        <p id="storage-note" class="muted" role="status"></p>
+      </div>
+    </section>
+    <nav class="pager" aria-label="Apartats"><a href="apartat-1-nombres-enters.html">← 01 · Nombres enters</a><a href="index.html">Unitat 1 · Nombres</a><a href="apartat-3-aproximacions-errors.html">03 · Aproximacions i errors →</a></nav>
+  </main>
+  <dialog id="reset-dialog"><h2>Reiniciar la pràctica?</h2><p>S’esborraran les respostes, les pistes i el progrés d’aquests 32 exercicis en aquest navegador.</p><form method="dialog"><button value="cancel">Conserva el progrés</button><button value="reset" class="danger">Reinicia</button></form></dialog>
+</body>
+</html>

@@ -1,10 +1,11 @@
 "use strict";
 (() => {
-  const exercises = window.INTEGER_EXERCISES;
+  const lesson = window.LESSON_PRACTICE;
+  const exercises = lesson?.exercises || window.INTEGER_EXERCISES;
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const signed = n => String(n).replace("-", "−");
-  const key = "markel-3eso-enters-practice-v2";
+  const key = lesson?.storageKey || "markel-3eso-enters-practice-v2";
   let memoryOnly = false;
   let saved;
   try { saved = JSON.parse(localStorage.getItem(key) || "null"); } catch { memoryOnly = true; }
@@ -52,6 +53,7 @@
     $("#position").textContent = current >= 0 ? `${position + 1} / ${list.length} · ${levels[level]}` : "Cap exercici pendent en aquest nivell";
   }
   function pointPlot() {
+    if (lesson?.visual) return lesson.visual(exercises[current]);
     const ticks = Array.from({length:17},(_,i) => { const v=i-8,x=40+i*37.5; return `<path d="M${x} 59v12" stroke="currentColor"/>${v%2 === 0 ? `<text x="${x}" y="94" text-anchor="middle">${signed(v)}</text>` : ""}`; }).join("");
     return `<div class="number-figure"><svg viewBox="0 0 680 116" role="img" aria-label="Punt A en una recta graduada de menys vuit a vuit, amb una marca per unitat"><path d="M30 65H650" stroke="currentColor"/>${ticks}<circle cx="152.5" cy="65" r="5" fill="#17634c"/><text x="152.5" y="38" text-anchor="middle" fill="#17634c" font-weight="bold">A</text></svg></div>`;
   }
@@ -76,7 +78,7 @@
       event.preventDefault(); r.answers = read();
       if (r.answers.some(value => !value.trim())) { feedback("Completa la resposta abans de comprovar-la.", "error"); return; }
       r.attempts++;
-      if (window.IntegerAnswers.check(ex,r.answers)) {
+      if ((lesson?.checker || window.IntegerAnswers).check(ex,r.answers)) {
         if (!r.consulted) r.solved = true;
         feedback(r.solved ? (r.hints ? "Correcte. Resolt amb pistes." : "Correcte. Ben resolt.") : "Correcte. Aquest exercici consta com a consultat perquè ja n’has vist la solució.", "ok");
         $("#solution-box").hidden = false;
@@ -111,7 +113,10 @@
   for (const input of document.querySelectorAll("input[name=level]")) input.addEventListener("change", () => { level=Number(input.value); current=candidates()[0] ?? -1; renderExercise(); });
   $("#pending-only").addEventListener("change", () => { current=candidates()[0] ?? -1; renderExercise(); });
   for (const [selector,delta] of [["#previous",-1],["#next",1]]) $(selector).addEventListener("click", () => { const list=activeList(); const next=list[list.indexOf(current)+delta]; if (next !== undefined) { current=next; renderExercise(true); } });
-  $("#reset-open").addEventListener("click", () => $("#reset-dialog").showModal());
+  $("#reset-open").addEventListener("click", () => {
+    $("#reset-dialog").returnValue = "cancel";
+    $("#reset-dialog").showModal();
+  });
   $("#reset-dialog").addEventListener("close", () => {
     if ($("#reset-dialog").returnValue !== "reset") return;
     for (const r of Object.values(records)) Object.assign(r,{ answers:[],hints:0,consulted:false,solved:false,attempts:0 });
@@ -133,7 +138,10 @@
     $("#lab-plot").innerHTML=`<svg viewBox="0 0 680 145" role="img" aria-label="${esc(sentence)}"><text x="40" y="19" fill="#245da1">Inici: ${signed(a)}</text><text x="640" y="19" text-anchor="end" fill="#17634c">Final: ${signed(end)}</text><path d="M30 85H650" stroke="currentColor"/>${ticks}<circle cx="${x(a)}" cy="85" r="6" fill="#fff" stroke="#245da1" stroke-width="3"/><circle cx="${x(end)}" cy="85" r="4" fill="#17634c"/>${delta ? `<path d="M${x(a)} 70V45H${x(end)}V68" fill="none" stroke="#17634c" stroke-width="2"/><path d="M${x(end)-5} 61l5 7 5-7" fill="none" stroke="#17634c" stroke-width="2"/>` : ""}</svg>`;
     $("#lab-result").textContent=sentence;
   }
-  for (const selector of ["#start","#operand","#operation"]) $(selector).addEventListener("input",updateLine);
+  if (!lesson) {
+    for (const selector of ["#start","#operand","#operation"]) $(selector).addEventListener("input",updateLine);
+    updateLine();
+  } else lesson.init?.();
   $("#practice-app").hidden=false;
-  updateLine(); renderExercise(); updateProgress();
+  renderExercise(); updateProgress();
 })();

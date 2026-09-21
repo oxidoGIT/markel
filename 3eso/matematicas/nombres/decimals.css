@@ -1,0 +1,28 @@
+.period { text-decoration:overline; text-decoration-thickness:1.5px; }
+.place-table { table-layout:fixed; }
+.place-table th,.place-table td { text-align:center; padding:8px 3px; overflow-wrap:anywhere; }
+.place-table th:nth-child(3),.place-table td:nth-child(3) { border-left:2px solid #17634c; }
+.decimal-types { margin:20px 0; }
+.decimal-types>div { padding:16px 0; border-bottom:1px solid #d8e2dd; }
+.decimal-types dt { margin-bottom:5px; }
+.written-sums { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:20px 0; }
+.written-sums figure { margin:0; }
+.written-sums pre { font-size:22px; line-height:1.5; margin:0 0 8px; color:#245da1; }
+figcaption { color:#586660; font-size:13px; }
+.slider-label { display:block; font-size:14px; font-weight:700; }
+#hundredths { display:block; width:100%; min-height:44px; accent-color:#17634c; margin:6px 0 20px; }
+.decimal-model { display:grid; grid-template-columns:180px minmax(0,1fr); align-items:center; gap:28px; margin-bottom:20px; }
+.decimal-model svg { display:block; width:100%; height:auto; }
+.decimal-model .hundred-grid { width:180px; height:180px; }
+.decimal-model .decimal-line { min-width:0; }
+.decimal-line p { font-size:14px; color:#586660; margin:12px 0 0; }
+.lesson h3 { margin-top:24px; }
+@media(max-width:600px) {
+  .number-figure svg text { font-size:22px; }
+  .decimal-line svg text { font-size:20px; }
+  .place-table th { font-size:11px; }
+  .decimal-model { grid-template-columns:1fr; gap:16px; }
+  .decimal-model .hundred-grid { justify-self:center; }
+  .written-sums { gap:16px; }
+  .written-sums pre { font-size:19px; }
+}
