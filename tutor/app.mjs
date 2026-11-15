@@ -1,3 +1,4 @@
+import { StudyUI } from './lib/study.mjs';
 import { PrivateClient, validateConfig } from './lib/client.mjs';
 import { prepareFiles, sha256, madridDate } from './lib/files.mjs';
 
@@ -5,14 +6,15 @@ const $ = s => document.querySelector(s);
 const escape = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const dateLabel = d => new Intl.DateTimeFormat('es-ES', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/Madrid' }).format(new Date(`${d}T12:00:00Z`));
 const labels = { pending:'Por confirmar', confirmed_no_additional:'Nada más · confirmado', class_cancelled:'No hubo clase', material_pending:'Falta material', new_content_received:'Novedades guardadas' };
-const views = { today:'Mi día', materials:'Mis materiales', schedule:'Mi horario', family:'Vista familiar' };
+const views = { today:'Mi día', materials:'Mis materiales', schedule:'Mi horario', study:'Estudiar', family:'Vista familiar' };
 let client, state, context, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
+const study = new StudyUI({rpc:(name,body)=>client.rpc(name,body),run,saved:afterSave,notify:toast,getState:()=>state,getRole:()=>context?.role,operation});
 const operations = new Map();
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tutor-private') : null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 8000); }
 function operation(key) { if (!operations.has(key)) operations.set(key, crypto.randomUUID()); return operations.get(key); }
 function clearPrivate() {
-  state = null; context = null; files = []; draft = null; operations.clear();
+  study.clear(); state = null; context = null; files = []; draft = null; operations.clear();
   $('#content-dialog').close(); $('#content-form').reset(); $('#selected-files').replaceChildren();
   $('#main').replaceChildren(); $('#profile').replaceChildren(); $('#form-error').textContent = '';
   $('#dialog-title').textContent = 'Añadir material'; $('#dialog-subtitle').textContent = '';
@@ -72,7 +74,7 @@ function render() {
   $('#breadcrumb').textContent = views[view];
   $('#nav-count').textContent = state.checks.filter(c => tracked(c) && c.date <= state.date && c.state === 'pending').length || '✓';
   $('#profile').textContent = context.role === 'admin' ? 'Cuenta familiar' : state.displayName;
-  $('#main').innerHTML = ({today,materials,schedule,family})[view]();
+  if (!(view==='study' && study.editing && $('#main [data-study-answer]'))) $('#main').innerHTML = view==='study' ? study.render() : ({today,materials,schedule,family})[view]();
   $('#access').hidden = true; $('#workspace').hidden = false;
 }
 async function refresh() {
@@ -88,7 +90,9 @@ async function refresh() {
       }
       const requestedDate = currentDate;
       const next = await client.rpc('tm_load', { p_student: context.studentId, p_date: requestedDate });
-      state = next; context.role = next.role; render();
+      const [studyData, history] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId})]);
+      studyData.history=history;
+      state = next; study.data=studyData; context.role = next.role; render();
       $('#sync-state').textContent = `Actualizado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}`;
     } catch (error) {
       if (!state || error.status === 403 || error.code === '42501') { client.clear(); showLogin(error.message); }
@@ -143,7 +147,10 @@ async function backup() {
   download(new Blob([JSON.stringify({...snapshot,files:contents})], {type:'application/json'}), `copia-privada-${madridDate()}.json`);
   toast('Copia preparada con registros y archivos verificados. Comprueba la descarga.');
 }
+document.addEventListener('input', e => { const form=e.target.closest('[data-study-answer]');if(form)study.remember(form); });
+document.addEventListener('submit', e => { const form=e.target.closest('[data-study-answer]');if(form){e.preventDefault();run(()=>study.respond(form));} });
 document.addEventListener('click', e => {
+  const studyButton=e.target.closest('[data-study]'); if(studyButton && state && !busy){study.action(studyButton);return;}
   const remove = e.target.closest('[data-remove]');
   if (remove && !busy) { files.splice(Number(remove.dataset.remove),1); fileList(); return; }
   const b = e.target.closest('[data-action]'); if (!b || !state) return;
@@ -224,13 +231,13 @@ window.addEventListener('offline', connection);
 window.addEventListener('focus', backgroundRefresh);
 document.addEventListener('visibilitychange', backgroundRefresh);
 window.addEventListener('pageshow', backgroundRefresh);
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange', () => {study.editing=false;render();});
 channel && (channel.onmessage = e => {
   if (!client?.session || e.data.user !== client.session.user?.id) return;
   if (e.data.kind === 'signout') { client.clear(); showLogin(); }
   else backgroundRefresh();
 });
-window.addEventListener('beforeunload', e => { if (draft && ($('#note').value || files.length || $('#later').checked)) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (study.editing || document.querySelector('#study-dialog[open]') || (draft && ($('#note').value || files.length || $('#later').checked))) { e.preventDefault(); e.returnValue = ''; } });
 setInterval(backgroundRefresh, 20000);
 connection();
 try {
