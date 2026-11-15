@@ -1,3 +1,4 @@
+import {processingBundle} from './lib/reports.mjs';
 import { deliveryPanel, deliveryInbox, latestDeliveries } from './lib/deliveries.mjs';
 import { StudyUI } from './lib/study.mjs';
 import { PrivateClient, validateConfig } from './lib/client.mjs';
@@ -8,14 +9,14 @@ const escape = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'
 const dateLabel = d => new Intl.DateTimeFormat('es-ES', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/Madrid' }).format(new Date(`${d}T12:00:00Z`));
 const labels = { pending:'Por confirmar', confirmed_no_additional:'Nada más · confirmado', class_cancelled:'No hubo clase', material_pending:'Falta material', new_content_received:'Novedades guardadas' };
 const views = { today:'Mi día', materials:'Mis materiales', schedule:'Mi horario', study:'Estudiar', family:'Vista familiar' };
-let client, state, context, deliveryData, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
+let client, state, context, deliveryData, processingData, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
 const study = new StudyUI({rpc:(name,body)=>client.rpc(name,body),run,saved:afterSave,notify:toast,getState:()=>state,getRole:()=>context?.role,operation});
 const operations = new Map();
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tutor-private') : null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 8000); }
 function operation(key) { if (!operations.has(key)) operations.set(key, crypto.randomUUID()); return operations.get(key); }
 function clearPrivate() {
-  study.clear(); state = null; context = null; deliveryData=null; files = []; draft = null; operations.clear();
+  study.clear(); state = null; context = null; deliveryData=null; processingData=null; files = []; draft = null; operations.clear();
   $('#content-dialog').close(); $('#content-form').reset(); $('#selected-files').replaceChildren();
   $('#main').replaceChildren(); $('#profile').replaceChildren(); $('#form-error').textContent = '';
   $('#dialog-title').textContent = 'Añadir material'; $('#dialog-subtitle').textContent = '';
@@ -64,9 +65,9 @@ function family() {
   if (context.role !== 'admin') return heading('Acceso restringido', 'Esta vista corresponde a la cuenta familiar.');
   return heading('Vista familiar', 'Seguimiento privado de clases y materiales.') +
     `<div class="stats-grid"><div class="stat"><span>Clases confirmadas</span><strong>${state.checks.filter(c => tracked(c) && c.state !== 'pending').length}</strong></div><div class="stat"><span>Materiales recibidos</span><strong>${state.materials.length}</strong></div><div class="stat"><span>Pendientes de procesar</span><strong>${state.materials.filter(m => m.state === 'queued').length}</strong></div></div>` +
-    deliveryInbox(deliveryData,state.subjects) +
+    deliveryInbox(deliveryData,state.subjects,processingData) +
     '<section class="mini-card"><h2>Copia privada completa</h2><p>Incluye registros y archivos. Guárdala en una carpeta privada.</p><button class="button primary" data-action="backup">Descargar copia</button><p class="help">La recuperación se realiza desde la administración, comprobando los archivos antes de restaurar los registros.</p></section>' +
-    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${({material_received:'Material recibido',check_confirmed:'Clase confirmada',day_delivered:'Entrega del día enviada',study_published:'Ejercicio publicado'})[l.action]||'Cambio guardado'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
+    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${({material_received:'Material recibido',check_confirmed:'Clase confirmada',day_delivered:'Entrega del día enviada',processing_authorized:'Análisis autorizado',report_saved:'Informe guardado',study_published:'Ejercicio publicado'})[l.action]||'Cambio guardado'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
 }
 function render() {
   if (!state || !context) return;
@@ -95,9 +96,9 @@ async function refresh() {
       }
       const requestedDate = currentDate;
       const next = await client.rpc('tm_load', { p_student: context.studentId, p_date: requestedDate });
-      const [studyData, history, nextDelivery] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId}),client.rpc('tm_delivery_load',{p_student:context.studentId,p_date:requestedDate})]);
+      const [studyData, history, nextDelivery, nextProcessing] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId}),client.rpc('tm_delivery_load',{p_student:context.studentId,p_date:requestedDate}),context.role==='admin'?client.rpc('tm_processing_load',{p_student:context.studentId}):Promise.resolve(null)]);
       studyData.history=history;
-      state = next; study.data=studyData; deliveryData=nextDelivery; context.role = next.role; render();
+      state = next; study.data=studyData; deliveryData=nextDelivery; processingData=nextProcessing; context.role = next.role; render();
       $('#sync-state').textContent = `Actualizado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}`;
     } catch (error) {
       if (!state || error.status === 403 || error.code === '42501') { client.clear(); showLogin(error.message); }
@@ -168,6 +169,11 @@ document.addEventListener('click', e => {
         await client.rpc('tm_delivery_close',{...payload,p_operation:operation(JSON.stringify(payload))});
         await afterSave();toast('Entrega enviada a tu vista familiar.');
       } catch(error) {if(error.code==='TM409'){await refresh();toast('La entrega ha cambiado en otro dispositivo. Revisa el resumen actualizado y vuelve a enviar.');}else throw error;}
+    } else if(b.dataset.action==='processing-export'&&context.role==='admin'){
+      const bundle=await client.rpc('tm_processing_claim',{p_student:state.studentId,p_delivery:b.dataset.id,p_worker:operation('processing:'+b.dataset.id)});
+      const complete=await processingBundle(bundle,path=>client.download(path));
+      download(new Blob([JSON.stringify(complete)],{type:'application/json'}),'entrega-privada-'+b.dataset.id+'.json');
+      await afterSave();toast('Entrega preparada. Los documentos están verificados; el análisis se realiza por tu orden en este chat.');
     } else if(b.dataset.action==='acknowledge-delivery'&&context.role==='admin') {
       await client.rpc('tm_delivery_acknowledge',{p_student:state.studentId,p_delivery:b.dataset.id});await afterSave();
     } else if(b.dataset.action==='delivery-download'&&context.role==='admin') {
