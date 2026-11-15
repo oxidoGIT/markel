@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unitat 2 - Potències · Matemàtiques · 3r ESO</title>
+  <meta name="description" content="Teoria breu de potències i arrels i 106 exercicis autocorregibles basats en els apunts, amb pistes i resolucions pas a pas.">
+  <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../nombres/apartat.css">
+  <link rel="stylesheet" href="potencies.css">
+  <script src="exercicis.js" defer></script>
+  <script src="potencies.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contingut">Salta al contingut</a>
+  <header class="hero">
+    <div class="hero__inner">
+      <nav class="crumbs" aria-label="Fil d’Ariadna"><a href="../../../index.html">Inici</a><span>›</span><a href="../../index.html">3r ESO</a><span>›</span><a href="../index.html">Matemàtiques</a><span>›</span><span aria-current="page">Unitat 2</span></nav>
+      <a class="back" href="../index.html">← Totes les unitats de Matemàtiques</a>
+      <p class="eyebrow">Matemàtiques · 3r ESO · Unitat 2</p>
+      <h1>Potències</h1>
+      <p class="hero__intro">Entén les regles. Vigila els signes. Resol els reptes.<br>Un resum dels apunts i una bateria de pràctica, amb especial atenció als errors que cal repassar.</p>
+      <nav class="section-nav" aria-label="Navegació de la unitat"><a href="#teoria">01 · Teoria breu</a><a href="#practica">02 · Exercicis</a><a href="#fonts">Apunts originals</a></nav>
+      <div class="progress">
+        <div><span id="progress-label" aria-live="polite">0 de 106 exercicis completats</span><strong id="priority-label">20 de repàs prioritari</strong></div>
+        <progress id="progress-bar" max="106" value="0" aria-label="Progrés de tota la unitat"></progress>
+        <button class="reset-progress" id="reset-progress" type="button">Esborra el progrés</button>
+        <p id="storage-note" class="small">El progrés es desa en aquest navegador.</p>
+      </div>
+    </div>
+  </header>
+  <main id="contingut">
+    <section class="unit-section" id="teoria" aria-labelledby="theory-title">
+      <p class="eyebrow">01 · Abans de començar</p>
+      <h2 id="theory-title">La teoria essencial</h2>
+      <p class="level__intro">El formulari de la pàgina 1, completat amb els apunts de les pàgines 8–11 i 18–19. En els quocients, el denominador sempre ha de ser diferent de zero.</p>
+      <div class="theory-grid">
+        <article class="theory-card" id="teoria-signes">
+          <p class="card-kicker">A · Base, exponent i signe</p><h3>Què s’eleva a la potència?</h3>
+          <p><span class="math-inline" data-math="a^n">a^n</span> és el producte de <strong>n factors iguals a a</strong>, si n és un enter positiu. Amb base fraccionària, s’eleven el numerador i el denominador.</p>
+          <p>Una base negativa dona resultat positiu amb exponent parell i negatiu amb exponent senar. Els parèntesis decideixen si el signe forma part de la base:</p>
+          <div class="math-row"><span data-math="(-3)^2">(-3)^2</span><span>= 9</span><span data-math="-3^2">-3^2</span><span>= −9</span></div>
+          <p class="small">Casos especials: a¹ = a; 1ⁿ = 1; a⁰ = 1 si a ≠ 0; 0ⁿ = 0 si n &gt; 0. En aquesta unitat, 0⁰ no està definit.</p>
+          <a class="practice-link" href="#practica" data-topic="signes">Practica signes i casos especials →</a>
+        </article>
+        <article class="theory-card" id="teoria-propietats">
+          <p class="card-kicker">B · Les propietats del formulari</p><h3>Tria la regla adequada</h3>
+          <dl class="rules">
+            <div><dt>Mateixa base: producte</dt><dd data-math="a^m*a^n=a^(m+n)">a^m · a^n = a^(m+n)</dd></div>
+            <div><dt>Mateixa base: quocient</dt><dd data-math="a^m/a^n=a^(m-n)">a^m / a^n = a^(m−n)</dd></div>
+            <div><dt>Potència d’una potència</dt><dd data-math="(a^m)^n=a^(m*n)">(a^m)^n = a^(m·n)</dd></div>
+            <div><dt>Producte i quocient</dt><dd data-math="(a*b)^n=a^n*b^n">(a·b)^n = a^n·b^n</dd><dd data-math="(a/b)^n=a^n/b^n">(a/b)^n = a^n/b^n</dd></div>
+          </dl>
+          <p class="small">També <span data-math="(a^m/b^n)^p=a^(m*p)/b^(n*p)">(a^m/b^n)^p = a^(m·p)/b^(n·p)</span>. Les regles es poden aplicar en els dos sentits: amb el mateix exponent pots agrupar les bases.</p>
+          <a class="practice-link" href="#practica" data-topic="propietats">Practica les propietats →</a>
+        </article>
+        <article class="theory-card" id="teoria-negatius">
+          <p class="card-kicker">C · Exponents negatius i simplificació</p><h3>Inverteix la base, conserva el signe</h3>
+          <div class="math-row"><span data-math="a^(-n)=1/a^n">a^(-n) = 1/a^n</span><span data-math="(a/b)^(-n)=(b/a)^n">(a/b)^(-n) = (b/a)^n</span></div>
+          <p>La base ha de ser no nul·la. Un exponent negatiu <strong>no</strong> vol dir resultat negatiu: 2⁻³ = 1/8, però (−2)⁻³ = −1/8.</p>
+          <p>Si un factor passa del numerador al denominador, o a l’inrevés, canvia el signe de l’exponent. Per simplificar expressions llargues, descompon les bases: 4 = 2², 8 = 2³, 9 = 3², 27 = 3³, 25 = 5².</p>
+          <p class="small">Exemple: <span data-math="(4^2*2^(-3))/8">(4²·2⁻³)/8</span> = 2⁴⁻³⁻³ = 2⁻² = 1/4. Resol primer les potències interiors i agrupa després.</p>
+          <a class="practice-link" href="#practica" data-topic="negatius">Practica fraccions i exponents negatius →</a>
+        </article>
+        <article class="theory-card" id="teoria-combinades">
+          <p class="card-kicker">D · Operacions combinades</p><h3>Les sumes no segueixen la mateixa regla</h3>
+          <p>Ordre de càlcul: <strong>parèntesis → potències → productes i divisions → sumes i restes</strong>. Les operacions de la mateixa prioritat es fan d’esquerra a dreta.</p>
+          <p>La potència d’un producte es pot separar; la d’una suma o resta, en general, no:</p>
+          <div class="math-row"><span data-math="(2+3)^2=25">(2+3)² = 25</span><span>però</span><span data-math="2^2+3^2=13">2²+3² = 13</span></div>
+          <p class="small">Només es poden cancel·lar <strong>factors</strong> comuns d’un producte, no termes d’una suma. Escriu un pas per línia per no perdre signes ni parèntesis.</p>
+          <a class="practice-link" href="#practica" data-topic="combinades">Practica les operacions combinades →</a>
+        </article>
+        <article class="theory-card" id="teoria-racionals">
+          <p class="card-kicker">E · Exponents racionals · Pàgina 18</p><h3>Una fracció a l’exponent és una arrel</h3>
+          <p>Per a a &gt; 0 i n enter positiu:</p>
+          <p class="formula">a<sup>m/n</sup> = ⁿ√(aᵐ) = (ⁿ√a)ᵐ</p>
+          <p>El <strong>denominador n</strong> és l’índex de l’arrel; el <strong>numerador m</strong> és l’exponent. Pots calcular primer l’arrel si és exacta.</p>
+          <p>Exemple: 8<sup>2/3</sup> = (³√8)² = 2² = 4. Si l’exponent és negatiu, inverteix: 8<sup>−2/3</sup> = 1/4.</p>
+          <p class="small">Treballarem les conversions i el càlcul amb bases positives com als apunts. No intercanviïs el numerador i el denominador.</p>
+          <a class="practice-link" href="#practica" data-topic="racionals">Practica els exponents racionals →</a>
+        </article>
+        <article class="theory-card" id="teoria-arrels">
+          <p class="card-kicker">F · Radicals · Pàgines 18–19</p><h3>L’arrel principal i les solucions</h3>
+          <svg class="radical-diagram" viewBox="0 0 360 135" role="img" aria-labelledby="radical-title"><title id="radical-title">A 3 per arrel quarta de 2 al cub, 3 és el coeficient, 4 és l’índex i 2 al cub és el radicand.</title><g fill="currentColor" font-family="Arial, sans-serif"><text x="110" y="76" font-size="38">3 ·</text><text x="175" y="48" font-size="19">4</text><text x="187" y="78" font-size="49">√</text><text x="223" y="75" font-size="34">2³</text><g font-size="13"><text x="12" y="20">Coeficient: 3</text><text x="160" y="20">Índex: 4</text><text x="210" y="125">Radicand: 2³</text></g></g><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M92 25 L118 43"/><path d="M185 25 L180 33"/><path d="M249 106 L238 84"/><path d="M215 35 H264"/></g></svg>
+          <p>L’arrel d’índex n de a és un nombre que elevat a n dona a. Si no hi ha índex escrit, és 2. El coeficient multiplica tota l’arrel.</p>
+          <table><caption>En els nombres reals</caption><thead><tr><th>Índex</th><th>Radicand</th><th>Valor del radical</th></tr></thead><tbody><tr><td>Parell</td><td>Positiu</td><td>Arrel principal positiva</td></tr><tr><td>Parell</td><td>Negatiu</td><td>No té valor real</td></tr><tr><td>Senar</td><td>Qualsevol</td><td>Únic, amb el mateix signe</td></tr></tbody></table>
+          <p class="small"><strong>Compte amb la taula del quadern:</strong> √4 = 2. En canvi, x² = 4 té dues solucions: −2 i 2. ³√(−27) = −3. L’arrel de zero sempre és zero.</p>
+          <a class="practice-link" href="#practica" data-topic="arrels">Practica les arrels →</a>
+        </article>
+      </div>
+    </section>
+    <section class="unit-section" id="practica" aria-labelledby="practice-title">
+      <p class="eyebrow">02 · De la regla al repte</p>
+      <h2 id="practice-title">106 exercicis, pas a pas</h2>
+      <p class="level__intro">Comença pels bàsics o activa el repàs prioritari: recull exercicis amb errors, ratllades o correccions als apunts. La dificultat és una orientació. Fes el desenvolupament en paper i comprova aquí el resultat.</p>
+      <details class="callout input-help"><summary>Com s’escriuen les respostes?</summary><p>Fraccions: <strong>3/10</strong>. Potències: <strong>2^5</strong> o <strong>(2/3)^15</strong>. Productes: <strong>2^8*5^5</strong>. També s’accepten exponents amb dígits volats, com 2⁵, i decimals amb coma. Conserva els parèntesis de les bases negatives.</p><p>Quan es demana una única potència, escriu una base numèrica i un exponent enter: el valor calculat tot sol no basta. En els altres càlculs, dona un enter, una fracció o una expressió de potències equivalent. Els radicals i les conversions tenen opcions per triar.</p></details>
+      <form id="filters" class="filters" aria-label="Filtra els exercicis">
+        <label>Tema<select id="topic"><option value="all">Tots els temes</option value="signes">A · Signes i casos especials</option><option value="propietats">B · Propietats i factors</option><option value="negatius">C · Exponents negatius i fraccions</option><option value="combinades">D · Operacions combinades</option><option value="racionals">E · Exponents racionals</option><option value="arrels">F · Arrels</option></select></label>
+        <label>Dificultat<select id="difficulty"><option value="all">Tots els nivells</option><option>Inicial</option><option>Mitjà</option><option>Alt</option></select></label>
+        <label class="toggle"><input id="priority-only" type="checkbox">Repàs prioritari</label>
+        <label class="toggle"><input id="pending-only" type="checkbox">Només pendents</label>
+        <button class="button button--soft" type="reset">Mostra-ho tot</button>
+      </form>
+      <p id="visible-count" role="status"></p>
+      <div id="exercises" class="exercise-grid"></div>
+      <p id="empty" class="callout" hidden>No hi ha exercicis amb aquests filtres. Prova un altre tema o mostra’ls tots.</p>
+      <noscript><p class="callout">Activa JavaScript per fer els exercicis autocorregibles. Pots consultar tota la teoria i els exercicis al PDF original.</p></noscript>
+    </section>
+    <section id="fonts" class="callout" aria-labelledby="source-title">
+      <p class="eyebrow">Material de la unitat</p><h2 id="source-title">Els apunts originals</h2>
+      <p><a href="../../../sources/matematicas/potencies/mates-potencias.pdf">Obre o descarrega el PDF complet · 19 pàgines</a></p>
+      <p>98 exercicis transcriuen enunciats del PDF o converteixen exemples dels apunts en pràctica. Els 8 complements estan identificats i cobreixen sobretot el càlcul amb exponents racionals i la lectura de radicals. Cada exercici indica la pàgina física del PDF i permet obrir-la.</p>
+      <p class="small">Les resolucions d’aquesta pàgina s’han recalculat: les marques del quadern no sempre garanteixen que un resultat sigui correcte. Els errors detectats s’expliquen després de respondre o en obrir la solució.</p>
+    </section>
+    <nav class="pager" aria-label="Altres unitats"><a href="../nombres/">← Unitat 1 · Nombres</a><a href="../index.html">Totes les unitats de Matemàtiques ↑</a></nav>
+  </main>
+</body>
+</html>
