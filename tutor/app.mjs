@@ -1,3 +1,4 @@
+import { deliveryPanel, deliveryInbox, latestDeliveries } from './lib/deliveries.mjs';
 import { StudyUI } from './lib/study.mjs';
 import { PrivateClient, validateConfig } from './lib/client.mjs';
 import { prepareFiles, sha256, madridDate } from './lib/files.mjs';
@@ -7,14 +8,14 @@ const escape = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'
 const dateLabel = d => new Intl.DateTimeFormat('es-ES', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/Madrid' }).format(new Date(`${d}T12:00:00Z`));
 const labels = { pending:'Por confirmar', confirmed_no_additional:'Nada más · confirmado', class_cancelled:'No hubo clase', material_pending:'Falta material', new_content_received:'Novedades guardadas' };
 const views = { today:'Mi día', materials:'Mis materiales', schedule:'Mi horario', study:'Estudiar', family:'Vista familiar' };
-let client, state, context, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
+let client, state, context, deliveryData, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
 const study = new StudyUI({rpc:(name,body)=>client.rpc(name,body),run,saved:afterSave,notify:toast,getState:()=>state,getRole:()=>context?.role,operation});
 const operations = new Map();
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tutor-private') : null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 8000); }
 function operation(key) { if (!operations.has(key)) operations.set(key, crypto.randomUUID()); return operations.get(key); }
 function clearPrivate() {
-  study.clear(); state = null; context = null; files = []; draft = null; operations.clear();
+  study.clear(); state = null; context = null; deliveryData=null; files = []; draft = null; operations.clear();
   $('#content-dialog').close(); $('#content-form').reset(); $('#selected-files').replaceChildren();
   $('#main').replaceChildren(); $('#profile').replaceChildren(); $('#form-error').textContent = '';
   $('#dialog-title').textContent = 'Añadir material'; $('#dialog-subtitle').textContent = '';
@@ -46,6 +47,7 @@ function today() {
     (pending.length ? `<section><h2>Quedaron pendientes</h2>${pending.map(card).join('')}</section>` : '') +
     `<section><div class="section-title"><h2>Tus clases del día</h2><span>${escape(dateLabel(state.date))}</span></div>${day.map(card).join('') || '<div class="empty-card">No hay comprobaciones para esta fecha.</div>'}</section>` +
     (awaiting.length ? `<section><h2>Material por traer</h2>${awaiting.map(card).join('')}</section>` : '') +
+    deliveryPanel(deliveryData,context.role,state.startsOn) +
     '<p class="private-note">Las conexiones escolares y el procesamiento con IA todavía están en preparación.</p>';
 }
 function materials() {
@@ -62,14 +64,17 @@ function family() {
   if (context.role !== 'admin') return heading('Acceso restringido', 'Esta vista corresponde a la cuenta familiar.');
   return heading('Vista familiar', 'Seguimiento privado de clases y materiales.') +
     `<div class="stats-grid"><div class="stat"><span>Clases confirmadas</span><strong>${state.checks.filter(c => tracked(c) && c.state !== 'pending').length}</strong></div><div class="stat"><span>Materiales recibidos</span><strong>${state.materials.length}</strong></div><div class="stat"><span>Pendientes de procesar</span><strong>${state.materials.filter(m => m.state === 'queued').length}</strong></div></div>` +
+    deliveryInbox(deliveryData,state.subjects) +
     '<section class="mini-card"><h2>Copia privada completa</h2><p>Incluye registros y archivos. Guárdala en una carpeta privada.</p><button class="button primary" data-action="backup">Descargar copia</button><p class="help">La recuperación se realiza desde la administración, comprobando los archivos antes de restaurar los registros.</p></section>' +
-    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${l.action === 'material_received' ? 'Material recibido' : 'Clase confirmada'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
+    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${({material_received:'Material recibido',check_confirmed:'Clase confirmada',day_delivered:'Entrega del día enviada',study_published:'Ejercicio publicado'})[l.action]||'Cambio guardado'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
 }
 function render() {
   if (!state || !context) return;
   let view = location.hash.slice(1) in views ? location.hash.slice(1) : 'today';
   if (view === 'family' && context.role !== 'admin') view = 'today';
   $('#family-link').hidden = context.role !== 'admin';
+  const waiting=latestDeliveries(deliveryData).filter(d=>!d.acknowledged_at).length;
+  $('#family-link').textContent='⌂ Vista familiar'+(waiting?' · '+waiting:'');
   document.querySelectorAll('[data-view]').forEach(l => { l.classList.toggle('active', l.dataset.view === view); if (l.dataset.view === view) l.setAttribute('aria-current','page'); else l.removeAttribute('aria-current'); });
   $('#breadcrumb').textContent = views[view];
   $('#nav-count').textContent = state.checks.filter(c => tracked(c) && c.date <= state.date && c.state === 'pending').length || '✓';
@@ -90,9 +95,9 @@ async function refresh() {
       }
       const requestedDate = currentDate;
       const next = await client.rpc('tm_load', { p_student: context.studentId, p_date: requestedDate });
-      const [studyData, history] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId})]);
+      const [studyData, history, nextDelivery] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId}),client.rpc('tm_delivery_load',{p_student:context.studentId,p_date:requestedDate})]);
       studyData.history=history;
-      state = next; study.data=studyData; context.role = next.role; render();
+      state = next; study.data=studyData; deliveryData=nextDelivery; context.role = next.role; render();
       $('#sync-state').textContent = `Actualizado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}`;
     } catch (error) {
       if (!state || error.status === 403 || error.code === '42501') { client.clear(); showLogin(error.message); }
@@ -156,7 +161,22 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-action]'); if (!b || !state) return;
   if (b.dataset.action === 'content') { if (!busy) openContent(b.dataset.id); return; }
   run(async () => {
-    if (b.dataset.action === 'confirm') {
+    if (b.dataset.action === 'close-day') {
+      if(context.role!=='student'||!deliveryData?.available) return;
+      try {
+        const payload={p_student:state.studentId,p_date:state.date,p_fingerprint:deliveryData.fingerprint};
+        await client.rpc('tm_delivery_close',{...payload,p_operation:operation(JSON.stringify(payload))});
+        await afterSave();toast('Entrega enviada a tu vista familiar.');
+      } catch(error) {if(error.code==='TM409'){await refresh();toast('La entrega ha cambiado en otro dispositivo. Revisa el resumen actualizado y vuelve a enviar.');}else throw error;}
+    } else if(b.dataset.action==='acknowledge-delivery'&&context.role==='admin') {
+      await client.rpc('tm_delivery_acknowledge',{p_student:state.studentId,p_delivery:b.dataset.id});await afterSave();
+    } else if(b.dataset.action==='delivery-download'&&context.role==='admin') {
+      const f=deliveryData?.deliveries.find(d=>d.id===b.dataset.delivery)?.snapshot.materials.find(m=>m.id===b.dataset.material)?.files.find(f=>f.hash===b.dataset.hash);
+      if(!f)throw new Error('No se encuentra el archivo de la entrega.');
+      const blob=await client.download(f.path);
+      if(blob.size!==f.size||await sha256(await blob.arrayBuffer())!==f.hash)throw new Error('El archivo no supera la comprobación de integridad.');
+      download(blob,f.name);
+    } else if (b.dataset.action === 'confirm') {
       const c = state.checks.find(c => c.id === b.dataset.id);
       await client.rpc('tm_confirm', {p_student:state.studentId,p_check:c.id,p_version:c.version,p_state:b.dataset.state,p_operation:operation(JSON.stringify(['confirm',c.id,c.version,b.dataset.state]))});
       await afterSave();
