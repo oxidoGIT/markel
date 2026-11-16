@@ -1,26 +1,23 @@
-import {subjectGroups, checkVersions} from './lib/subjects.mjs';
+import {driveDay,driveInbox} from './lib/drive.mjs';
 import {processingBundle} from './lib/reports.mjs';
-import { deliveryPanel, deliveryInbox, latestDeliveries } from './lib/deliveries.mjs';
+import { deliveryInbox, latestDeliveries } from './lib/deliveries.mjs';
 import { StudyUI } from './lib/study.mjs';
 import { PrivateClient, validateConfig } from './lib/client.mjs';
-import { prepareFiles, sha256, madridDate } from './lib/files.mjs';
+import { sha256, madridDate } from './lib/files.mjs';
 
 const $ = s => document.querySelector(s);
 const escape = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const dateLabel = d => new Intl.DateTimeFormat('es-ES', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/Madrid' }).format(new Date(`${d}T12:00:00Z`));
-const labels = { pending:'Por confirmar', confirmed_no_additional:'Nada más · confirmado', class_cancelled:'No hubo clase', material_pending:'Falta material', new_content_received:'Novedades guardadas' };
 const views = { today:'Mi día', materials:'Mis materiales', schedule:'Mi horario', study:'Estudiar', family:'Vista familiar' };
-let client, state, context, deliveryData, processingData, busy = false, syncing, currentDate = madridDate(), files = [], draft, toastTimer;
+let client, state, context, deliveryData, processingData, driveData, busy = false, syncing, currentDate = madridDate(), liveDate = true, driveDraft = {}, driveUpdating = false, driveOperation, toastTimer;
 const study = new StudyUI({rpc:(name,body)=>client.rpc(name,body),run,saved:afterSave,notify:toast,getState:()=>state,getRole:()=>context?.role,operation});
 const operations = new Map();
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('tutor-private') : null;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 8000); }
 function operation(key) { if (!operations.has(key)) operations.set(key, crypto.randomUUID()); return operations.get(key); }
 function clearPrivate() {
-  study.clear(); state = null; context = null; deliveryData=null; processingData=null; files = []; draft = null; operations.clear();
-  $('#content-dialog').close(); $('#content-form').reset(); $('#selected-files').replaceChildren();
-  $('#main').replaceChildren(); $('#profile').replaceChildren(); $('#form-error').textContent = '';
-  $('#dialog-title').textContent = 'Añadir material'; $('#dialog-subtitle').textContent = '';
+  study.clear(); state = null; context = null; deliveryData=null; processingData=null; driveData=null; driveDraft={}; driveUpdating=false; driveOperation=null; currentDate=madridDate(); liveDate=true; operations.clear();
+  $('#main').replaceChildren(); $('#profile').replaceChildren();
   $('#workspace').hidden = true; $('#access').hidden = false; $('#password').value = '';
 }
 function showLogin(message = '') {
@@ -34,27 +31,14 @@ function heading(title, text) { return `<div class="page-heading"><div><div clas
 const subjectColor = s => ['blue','green','orange','purple','pink'].includes(s?.color) ? s.color : 'green';
 function badge(s) { return `<span class="subject-icon ${subjectColor(s)}">${escape(s.short)}</span>`; }
 const datesLabel = checks => [...new Set(checks.map(c=>c.date))].map(dateLabel).join(' · ');
-function card(g) {
-  const s=subject(g.subjectId),editable=state.date===madridDate()&&state.date>=state.startsOn&&state.date<=state.endsOn;
-  const done=!g.waiting.length, id=escape(g.subjectId);
-  return `<article class="class-card ${done?'is-done':''}"><div class="card-heading">${badge(s)}<div class="subject-title"><h3>${escape(s.name)}</h3><span>${g.waiting.length?'Clases por revisar: '+escape(datesLabel(g.waiting)):'Última clase: '+escape(dateLabel(g.last.date))}</span></div><span class="status">${labels[g.status]}</span></div>
-  ${g.waiting.length>1?'<p class="help">Sube juntos los apuntes acumulados de esta asignatura. No hace falta repartirlos por días.</p>':''}
-  ${g.checks.some(c=>c.sessions.some(t=>t.alternationGroup))?'<p class="help">Incluye una franja alterna: revisa si hay novedades de esta asignatura.</p>':''}
-  ${editable&&g.checks.length?`<div class="card-actions"><button class="button primary" data-action="content" data-id="${id}">${done?'＋ Añadir material':'＋ Subir material'}</button>${g.canConfirm?`<button class="button secondary" data-action="confirm" data-id="${id}" data-state="confirmed_no_additional">Nada nuevo en estas fechas</button><button class="text-button" data-action="confirm" data-id="${id}" data-state="class_cancelled">No hubo clase en estas fechas</button>`:''}</div>`:''}</article>`;
-}
 function today() {
-  const groups=subjectGroups(state),waiting=groups.filter(g=>g.waiting.length),done=groups.filter(g=>!g.waiting.length);
-  return heading(`Hola, ${state.displayName}`, 'Una subida por asignatura, con todos los apuntes que tengas pendientes.') +
-    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Inicio del seguimiento: ${escape(dateLabel(state.startsOn))}. ${state.date<state.startsOn?'Todavía no hay clases que confirmar.':state.date!==madridDate()?'Consulta del historial. Para subir material, vuelve a la fecha de hoy.':''}</p></div>` +
-    `<section class="day-banner"><div><span class="banner-label">TU ENTREGA</span><h2>Todo junto por asignatura</h2><p>Pueden ser apuntes de hoy o de varios días. Al terminar, envía una sola entrega con todo.</p></div></section>` +
-    (waiting.length?`<section><h2>Asignaturas por revisar</h2>${waiting.map(card).join('')}</section>`:'') +
-    (done.length?`<section><h2>Asignaturas revisadas</h2>${done.map(card).join('')}</section>`:'') +
-    (!groups.length?'<div class="empty-card">No hay comprobaciones para esta fecha.</div>':'') +
-    deliveryPanel(deliveryData,context.role,state.startsOn);
+  return heading(`Hola, ${state.displayName}`, 'Los apuntes se suben desde Drive. Aquí confirmas que has terminado.')+
+    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Inicio del seguimiento: ${escape(dateLabel(state.startsOn))}.</p></div>`+
+    driveDay(driveData,state,context.role,driveDraft,driveUpdating,madridDate());
 }
 function materials() {
-  return heading('Mis materiales', 'Los apuntes recibidos quedan separados de su procesamiento.') +
-    (state.materials.length ? `<div class="material-grid">${[...state.materials].reverse().map(m => `<article class="material-card"><div class="card-heading">${badge(subject(m.subjectId))}<h3>${escape(subject(m.subjectId).name)}</h3></div><p>Recibido ${escape(dateLabel(madridDate(new Date(m.createdAt))))} · ${m.state === 'queued' ? 'Pendiente de procesar' : escape(m.state)}</p><p class="help">Clases de referencia: ${escape(datesLabel(m.coveredDates?.length?m.coveredDates:[{date:m.date}]))}</p><p class="material-note">${escape(m.note)}</p><ul class="file-list">${m.files.map(f => `<li><span>${escape(f.name)}<small>${Math.ceil(f.size / 1024)} KB</small></span><button class="text-button" data-action="download" data-material="${escape(m.id)}" data-hash="${f.hash}">Descargar</button></li>`).join('')}</ul></article>`).join('')}</div>` : '<div class="large-empty"><h2>Aquí irán tus apuntes</h2><p>Puedes añadir notas y archivos desde «Mi día».</p></div>');
+  return heading('Mis materiales', 'Copias privadas de los PDF recogidos de Drive y su estado de procesamiento.') +
+    (state.materials.length ? `<div class="material-grid">${[...state.materials].reverse().map(m => `<article class="material-card"><div class="card-heading">${badge(subject(m.subjectId))}<h3>${escape(subject(m.subjectId).name)}</h3></div><p>Recibido ${escape(dateLabel(madridDate(new Date(m.createdAt))))} · ${escape(({queued:'Pendiente de procesar',processing:'En análisis',processed:'Procesado',activities_generated:'Actividades preparadas',needs_review:'Pendiente de revisión',failed:'No se pudo procesar'})[m.state]||'Estado por comprobar')}</p>${m.coveredDates?.length?`<p class="help">Clases de referencia: ${escape(datesLabel(m.coveredDates))}</p>`:""}<p class="material-note">${escape(m.note)}</p><ul class="file-list">${m.files.map(f => `<li><span>${escape(f.name)}<small>${Math.ceil(f.size / 1024)} KB</small></span><button class="text-button" data-action="download" data-material="${escape(m.id)}" data-hash="${f.hash}">Descargar</button></li>`).join('')}</ul></article>`).join('')}</div>` : '<div class="large-empty"><h2>Aquí irán tus apuntes</h2><p>Aparecerán cuando se recojan los PDF de tu entrega de Drive.</p></div>');
 }
 function schedule() {
   const times = [...new Set(state.schedule.map(s => `${s.start}–${s.end}`))].sort();
@@ -66,22 +50,22 @@ function family() {
   if (context.role !== 'admin') return heading('Acceso restringido', 'Esta vista corresponde a la cuenta familiar.');
   return heading('Vista familiar', 'Seguimiento privado de clases y materiales.') +
     `<div class="stats-grid"><div class="stat"><span>Clases confirmadas</span><strong>${state.checks.filter(c => tracked(c) && c.state !== 'pending').length}</strong></div><div class="stat"><span>Materiales recibidos</span><strong>${state.materials.length}</strong></div><div class="stat"><span>Pendientes de procesar</span><strong>${state.materials.filter(m => m.state === 'queued').length}</strong></div></div>` +
-    deliveryInbox(deliveryData,state.subjects,processingData) +
+    driveInbox(driveData,state.subjects) + deliveryInbox(deliveryData,state.subjects,processingData) +
     '<section class="mini-card"><h2>Copia privada completa</h2><p>Incluye registros y archivos. Guárdala en una carpeta privada.</p><button class="button primary" data-action="backup">Descargar copia</button><p class="help">La recuperación se realiza desde la administración, comprobando los archivos antes de restaurar los registros.</p></section>' +
-    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${({material_received:'Material recibido',check_confirmed:'Clase confirmada',day_delivered:'Entrega del día enviada',processing_authorized:'Análisis autorizado',report_saved:'Informe guardado',study_published:'Ejercicio publicado'})[l.action]||'Cambio guardado'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
+    `<section class="mini-card"><h2>Últimas acciones</h2><ul class="activity-list">${state.logs.slice(-12).reverse().map(l => `<li><span>${({drive_submitted:'Entrega de Drive confirmada',drive_imported:'PDF recogidos de Drive',drive_configured:'Carpetas de Drive preparadas',material_received:'Material recibido',check_confirmed:'Clase confirmada',day_delivered:'Entrega del día enviada',processing_authorized:'Análisis autorizado',report_saved:'Informe guardado',study_published:'Ejercicio publicado'})[l.action]||'Cambio guardado'}</span><time>${escape(new Date(l.at).toLocaleString('es-ES', {timeZone:'Europe/Madrid'}))}</time></li>`).join('')}</ul></section>`;
 }
 function render() {
   if (!state || !context) return;
   let view = location.hash.slice(1) in views ? location.hash.slice(1) : 'today';
   if (view === 'family' && context.role !== 'admin') view = 'today';
   $('#family-link').hidden = context.role !== 'admin';
-  const waiting=latestDeliveries(deliveryData).filter(d=>!d.acknowledged_at).length;
+  const waiting=latestDeliveries(deliveryData).filter(d=>!d.acknowledged_at).length+(driveData?.submissions||[]).filter(d=>['pending','importing'].includes(d.state)).length;
   $('#family-link').textContent='⌂ Vista familiar'+(waiting?' · '+waiting:'');
   document.querySelectorAll('[data-view]').forEach(l => { l.classList.toggle('active', l.dataset.view === view); if (l.dataset.view === view) l.setAttribute('aria-current','page'); else l.removeAttribute('aria-current'); });
   $('#breadcrumb').textContent = views[view];
-  $('#nav-count').textContent = subjectGroups(state).filter(g=>g.waiting.length).length || '✓';
+  $('#nav-count').textContent = (driveData?.submissions||[]).some(d=>d.school_date===state.date)?'✓':'';
   $('#profile').textContent = context.role === 'admin' ? 'Cuenta familiar' : state.displayName;
-  if (!(view==='study' && study.editing && $('#main [data-study-answer]'))) $('#main').innerHTML = view==='study' ? study.render() : ({today,materials,schedule,family})[view]();
+  if (!(view==='study' && study.editing && $('#main [data-study-answer]')) && !(view==='today' && $('#drive-form')?.contains(document.activeElement))) $('#main').innerHTML = view==='study' ? study.render() : ({today,materials,schedule,family})[view]();
   $('#access').hidden = true; $('#workspace').hidden = false;
 }
 async function refresh() {
@@ -95,11 +79,12 @@ async function refresh() {
         if (contexts.length !== 1) throw new Error('Esta cuenta todavía no tiene un espacio asignado.');
         context = contexts[0];
       }
+      if(liveDate)currentDate=madridDate();
       const requestedDate = currentDate;
       const next = await client.rpc('tm_load', { p_student: context.studentId, p_date: requestedDate });
-      const [studyData, history, nextDelivery, nextProcessing] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId}),client.rpc('tm_delivery_load',{p_student:context.studentId,p_date:requestedDate}),context.role==='admin'?client.rpc('tm_processing_load',{p_student:context.studentId}):Promise.resolve(null)]);
+      const [studyData, history, nextDelivery, nextProcessing, nextDrive] = await Promise.all([client.rpc('tm_study_load', {p_student:context.studentId}),client.rpc('tm_study_history', {p_student:context.studentId}),client.rpc('tm_delivery_load',{p_student:context.studentId,p_date:requestedDate}),context.role==='admin'?client.rpc('tm_processing_load',{p_student:context.studentId}):Promise.resolve(null),client.rpc('tm_drive_load',{p_student:context.studentId})]);
       studyData.history=history;
-      state = next; study.data=studyData; deliveryData=nextDelivery; processingData=nextProcessing; context.role = next.role; render();
+      state = next; driveData=nextDrive; study.data=studyData; deliveryData=nextDelivery; processingData=nextProcessing; context.role = next.role; render();
       $('#sync-state').textContent = `Actualizado ${new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}`;
     } catch (error) {
       if (!state || error.status === 403 || error.code === '42501') { client.clear(); showLogin(error.message); }
@@ -124,19 +109,6 @@ async function afterSave() {
   try { await refresh(); toast('Guardado y actualizado.'); }
   catch { toast('El servidor ha guardado el cambio. Falta actualizar la pantalla; pulsa «Actualizar».'); }
 }
-function fileList() {
-  $('#selected-files').innerHTML = files.map((f,i) => `<li><span>${escape(f.name)}</span><button type="button" class="text-button" data-remove="${i}">Quitar</button></li>`).join('');
-}
-function openContent(id) {
-  const group=subjectGroups(state).find(g=>g.subjectId===id);
-  if(!group?.checks.length||state.date!==madridDate())return;
-  draft = {subjectId:id,checks:checkVersions(group),date:state.date,studentId:state.studentId};
-  $('#refresh-draft').hidden = true;
-  files = []; $('#content-form').reset(); fileList(); $('#form-error').textContent = '';
-  $('#dialog-title').textContent = subject(id).name;
-  $('#dialog-subtitle').textContent = `Una subida con todos los apuntes acumulados. Clases de referencia: ${datesLabel(group.checks)}.`;
-  $('#content-dialog').showModal(); $('#note').focus();
-}
 function download(blob, name) {
   const url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = name; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
@@ -159,19 +131,10 @@ document.addEventListener('input', e => { const form=e.target.closest('[data-stu
 document.addEventListener('submit', e => { const form=e.target.closest('[data-study-answer]');if(form){e.preventDefault();run(()=>study.respond(form));} });
 document.addEventListener('click', e => {
   const studyButton=e.target.closest('[data-study]'); if(studyButton && state && !busy){study.action(studyButton);return;}
-  const remove = e.target.closest('[data-remove]');
-  if (remove && !busy) { files.splice(Number(remove.dataset.remove),1); fileList(); return; }
-  const b = e.target.closest('[data-action]'); if (!b || !state) return;
-  if (b.dataset.action === 'content') { if (!busy) openContent(b.dataset.id); return; }
-  run(async () => {
-    if (b.dataset.action === 'close-day') {
-      if(context.role!=='student'||!deliveryData?.available) return;
-      try {
-        const payload={p_student:state.studentId,p_date:state.date,p_fingerprint:deliveryData.fingerprint};
-        await client.rpc('tm_delivery_close',{...payload,p_operation:operation(JSON.stringify(payload))});
-        await afterSave();toast('Entrega enviada a tu vista familiar.');
-      } catch(error) {if(error.code==='TM409'){await refresh();toast('La entrega ha cambiado en otro dispositivo. Revisa el resumen actualizado y vuelve a enviar.');}else throw error;}
-    } else if(b.dataset.action==='processing-export'&&context.role==='admin'){
+  const b=e.target.closest('[data-action]');if(!b||!state)return;
+  if(b.dataset.action==='new-drive'){if(!busy){driveUpdating=true;driveDraft={};driveOperation=null;render();}return;}
+  run(async()=>{
+    if(b.dataset.action==='processing-export'&&context.role==='admin'){
       const bundle=await client.rpc('tm_processing_claim',{p_student:state.studentId,p_delivery:b.dataset.id,p_worker:operation('processing:'+b.dataset.id)});
       const complete=await processingBundle(bundle,path=>client.download(path));
       download(new Blob([JSON.stringify(complete)],{type:'application/json'}),'entrega-privada-'+b.dataset.id+'.json');
@@ -184,13 +147,6 @@ document.addEventListener('click', e => {
       const blob=await client.download(f.path);
       if(blob.size!==f.size||await sha256(await blob.arrayBuffer())!==f.hash)throw new Error('El archivo no supera la comprobación de integridad.');
       download(blob,f.name);
-    } else if (b.dataset.action === 'confirm') {
-      const g=subjectGroups(state).find(g=>g.subjectId===b.dataset.id);
-      if(!g?.canConfirm||state.date!==madridDate())return;
-      const payload={p_student:state.studentId,p_date:state.date,p_subject:g.subjectId,p_checks:checkVersions(g),p_state:b.dataset.state};
-      try {await client.rpc('tm_subject_confirm',{...payload,p_operation:operation(JSON.stringify(payload))});}
-      catch(error){if(error.code==='TM409'){await refresh();toast('La asignatura ha cambiado en otro dispositivo. Revisa las fechas actualizadas antes de confirmar.');return;}throw error;}
-      await afterSave();
     } else if (b.dataset.action === 'download') {
       const f = state.materials.find(m => m.id === b.dataset.material)?.files.find(f => f.hash === b.dataset.hash);
       if (!f) throw new Error('No se encuentra el archivo.');
@@ -200,52 +156,18 @@ document.addEventListener('click', e => {
     } else if (b.dataset.action === 'backup' && context.role === 'admin') await backup();
   });
 });
-$('#content-form').addEventListener('submit', e => {
-  e.preventDefault(); run(async () => {
-    $('#save-content').disabled = true; $('#form-error').textContent = '';
-    try {
-      const prepared = await prepareFiles(files), uploaded = [];
-      if (!$('#note').value.trim() && !prepared.length && !$('#later').checked) throw new Error('Añade una nota, un archivo o indica que lo traerás después.');
-      for (const file of prepared) {
-        $('#form-error').textContent = `Subiendo ${file.name}…`;
-        uploaded.push(await client.upload(draft.studentId,file));
-      }
-      const payload = {p_student:draft.studentId,p_date:draft.date,p_subject:draft.subjectId,p_checks:draft.checks,p_note:$('#note').value,p_files:uploaded,p_later:$('#later').checked};
-      await client.rpc('tm_subject_receive', {...payload,p_operation:operation(JSON.stringify(payload))});
-      $('#content-dialog').close(); $('#content-form').reset(); files = []; draft = null; fileList(); await afterSave();
-    } catch (error) {
-      $('#form-error').textContent = error.message;
-      if (error.code === 'TM409') {
-        $('#form-error').textContent += ' Pulsa «Actualizar»; después podrás revisar la asignatura y reenviar el borrador.';
-        draft.conflict = true;
-        $('#refresh-draft').hidden = false;
-      }
-    } finally { $('#save-content').disabled = false; }
-  });
+function rememberDrive(form){driveDraft={confirmed:form.elements.confirmed.checked,note:form.elements.note.value,missing:[...form.querySelectorAll('[name="missing"]:checked')].map(x=>x.value)};}
+document.addEventListener('input',e=>{const form=e.target.closest('#drive-form');if(form)rememberDrive(form);});
+document.addEventListener('submit',e=>{
+ const form=e.target.closest('#drive-form');if(!form)return;e.preventDefault();rememberDrive(form);
+ run(async()=>{if(context.role!=='student')return;const payload={p_student:state.studentId,p_missing:driveDraft.missing,p_note:driveDraft.note,p_confirmed:driveDraft.confirmed};
+  const signature=JSON.stringify([madridDate(),payload]);if(driveOperation?.signature!==signature)driveOperation={signature,id:crypto.randomUUID()};
+  const controls=[...form.querySelectorAll('button,input,textarea')];controls.forEach(x=>x.disabled=true);
+  try{await client.rpc('tm_drive_submit',{...payload,p_operation:driveOperation.id});driveDraft={};driveUpdating=false;driveOperation=null;document.activeElement?.blur();await afterSave();toast('Confirmado. Tu familia recibirá el aviso para pedir el procesamiento.');}finally{controls.forEach(x=>x.disabled=false);}
+ });
 });
-document.addEventListener('change', e => {
-  if (['attachments','camera'].includes(e.target.id) && !busy) { files.push(...e.target.files); fileList(); e.target.value = ''; }
-  if (e.target.id === 'school-date') run(async () => {
-    const previous = currentDate; currentDate = e.target.value;
-    try { await refresh(); } catch (error) { currentDate = previous; render(); throw error; }
-  });
-});
-for (const id of ['cancel-dialog','close-dialog']) $(`#${id}`).onclick = () => { if (!busy) { $('#content-dialog').close(); $('#content-form').reset(); files = []; draft = null; fileList(); } };
-$('#content-dialog').addEventListener('cancel', e => { if (busy) e.preventDefault(); });
-async function refreshDraft() {
-  await refresh();
-  if (draft?.conflict) {
-    const g=subjectGroups(state).find(g=>g.subjectId===draft.subjectId);
-    if(g?.checks.length&&draft.date===state.date&&state.date===madridDate()) {
-      draft.checks=checkVersions(g);draft.conflict=false;
-      $('#dialog-subtitle').textContent=`Una subida con todos los apuntes acumulados. Clases de referencia: ${datesLabel(g.checks)}.`;
-      $('#refresh-draft').hidden=true;
-      $('#form-error').textContent='Asignatura actualizada. Revisa las fechas y el borrador antes de guardar.';
-    } else $('#form-error').textContent='Este conjunto ya está cerrado o ha cambiado el día. El borrador sigue aquí para que puedas copiarlo.';
-  }
-}
-$('#refresh').onclick = () => run(refreshDraft);
-$('#refresh-draft').onclick = () => run(refreshDraft);
+document.addEventListener('change',e=>{if(e.target.id==='school-date')run(async()=>{const previous=currentDate,wasLive=liveDate;currentDate=e.target.value;liveDate=currentDate===madridDate();try{await refresh();}catch(error){currentDate=previous;liveDate=wasLive;render();throw error;}});});
+$('#refresh').onclick=()=>run(refresh);
 $('#signout').onclick = async () => {
   const user = client.session?.user?.id; clearPrivate();
   const out = client.signOut(); showLogin(); channel?.postMessage({kind:'signout',user}); await out;
@@ -269,7 +191,7 @@ channel && (channel.onmessage = e => {
   if (e.data.kind === 'signout') { client.clear(); showLogin(); }
   else backgroundRefresh();
 });
-window.addEventListener('beforeunload', e => { if (study.editing || document.querySelector('#study-dialog[open]') || (draft && ($('#note').value || files.length || $('#later').checked))) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (study.editing || document.querySelector('#study-dialog[open]') || (driveDraft.note||driveDraft.confirmed||driveDraft.missing?.length)) { e.preventDefault(); e.returnValue = ''; } });
 setInterval(backgroundRefresh, 20000);
 connection();
 try {
