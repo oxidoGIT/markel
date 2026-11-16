@@ -50,7 +50,8 @@ function today() {
     (waiting.length?`<section><h2>Asignaturas por revisar</h2>${waiting.map(card).join('')}</section>`:'') +
     (done.length?`<section><h2>Asignaturas revisadas</h2>${done.map(card).join('')}</section>`:'') +
     (!groups.length?'<div class="empty-card">No hay comprobaciones para esta fecha.</div>':'') +
-    deliveryPanel(deliveryData,context.role,state.startsOn);
+    deliveryPanel(deliveryData,context.role,state.startsOn) +
+    (state.date<state.startsOn?'<section class="mini-card"><h2>Prueba la cámara antes de empezar</h2><p>Puedes comprobar cómo salen las fotos sin registrar una entrega.</p><a class="button secondary" href="./camera.html">Probar cámara y adjuntos</a></section>':'');
 }
 function materials() {
   return heading('Mis materiales', 'Los apuntes recibidos quedan separados de su procesamiento.') +
