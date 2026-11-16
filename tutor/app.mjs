@@ -1,3 +1,4 @@
+import {subjectGroups, checkVersions} from './lib/subjects.mjs';
 import {processingBundle} from './lib/reports.mjs';
 import { deliveryPanel, deliveryInbox, latestDeliveries } from './lib/deliveries.mjs';
 import { StudyUI } from './lib/study.mjs';
@@ -32,29 +33,28 @@ const tracked = c => subject(c.subjectId)?.trackingEnabled !== false;
 function heading(title, text) { return `<div class="page-heading"><div><div class="eyebrow">TU ESPACIO PRIVADO</div><h1>${escape(title)}</h1><p class="muted">${escape(text)}</p></div></div>`; }
 const subjectColor = s => ['blue','green','orange','purple','pink'].includes(s?.color) ? s.color : 'green';
 function badge(s) { return `<span class="subject-icon ${subjectColor(s)}">${escape(s.short)}</span>`; }
-function card(c) {
-  const s = subject(c.subjectId), done = c.state !== 'pending';
-  return `<article class="class-card ${done ? 'is-done' : ''}"><div class="card-heading">${badge(s)}<div class="subject-title"><h3>${escape(s.name)}</h3><span>${escape(dateLabel(c.date))} · ${c.sessions.map(t => `${escape(t.start)}–${escape(t.end)}`).join(' · ')}</span></div><span class="status">${labels[c.state]}</span></div>
-  ${c.sessions.some(t => t.alternationGroup) ? '<p class="help">Franja alterna: revisa igualmente si hay novedades de esta asignatura.</p>' : ''}
-  ${c.note ? `<p class="confirmed-note">${escape(c.note)}</p>` : ''}
-  ${!done ? `<p class="class-question">¿Habéis trabajado algo que deba saber?</p><div class="card-actions"><button class="button secondary" data-action="confirm" data-id="${escape(c.id)}" data-state="confirmed_no_additional">✓ Nada más</button><button class="button primary" data-action="content" data-id="${escape(c.id)}">＋ Hay novedades</button><button class="text-button" data-action="confirm" data-id="${escape(c.id)}" data-state="class_cancelled">No hubo clase</button></div>` : ['material_pending','new_content_received'].includes(c.state) ? `<button class="text-button" data-action="content" data-id="${escape(c.id)}">＋ Añadir material</button>` : ''}</article>`;
+const datesLabel = checks => [...new Set(checks.map(c=>c.date))].map(dateLabel).join(' · ');
+function card(g) {
+  const s=subject(g.subjectId),editable=state.date===madridDate()&&state.date>=state.startsOn&&state.date<=state.endsOn;
+  const done=!g.waiting.length, id=escape(g.subjectId);
+  return `<article class="class-card ${done?'is-done':''}"><div class="card-heading">${badge(s)}<div class="subject-title"><h3>${escape(s.name)}</h3><span>${g.waiting.length?'Clases por revisar: '+escape(datesLabel(g.waiting)):'Última clase: '+escape(dateLabel(g.last.date))}</span></div><span class="status">${labels[g.status]}</span></div>
+  ${g.waiting.length>1?'<p class="help">Sube juntos los apuntes acumulados de esta asignatura. No hace falta repartirlos por días.</p>':''}
+  ${g.checks.some(c=>c.sessions.some(t=>t.alternationGroup))?'<p class="help">Incluye una franja alterna: revisa si hay novedades de esta asignatura.</p>':''}
+  ${editable&&g.checks.length?`<div class="card-actions"><button class="button primary" data-action="content" data-id="${id}">${done?'＋ Añadir material':'＋ Subir material'}</button>${g.canConfirm?`<button class="button secondary" data-action="confirm" data-id="${id}" data-state="confirmed_no_additional">Nada nuevo en estas fechas</button><button class="text-button" data-action="confirm" data-id="${id}" data-state="class_cancelled">No hubo clase en estas fechas</button>`:''}</div>`:''}</article>`;
 }
 function today() {
-  const checks = state.checks.filter(tracked), day = checks.filter(c => c.date === state.date);
-  const pending = checks.filter(c => c.date < state.date && c.state === 'pending');
-  const awaiting = checks.filter(c => c.date <= state.date && c.state === 'material_pending');
-  return heading(`Hola, ${state.displayName}`, 'Primero revisamos tus clases. Después, a otra cosa.') +
-    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Inicio del seguimiento: ${escape(dateLabel(state.startsOn))}. ${state.date < state.startsOn ? 'Todavía no hay clases que confirmar.' : ''}</p></div>` +
-    `<section class="day-banner"><div><span class="banner-label">TU REVISIÓN DE CLASES</span><h2>${day.length ? '¿Qué habéis hecho hoy?' : 'Sin clases para revisar'}</h2><p>${day.filter(c => c.state !== 'pending').length} de ${day.length} asignaturas confirmadas.</p></div></section>` +
-    (pending.length ? `<section><h2>Quedaron pendientes</h2>${pending.map(card).join('')}</section>` : '') +
-    `<section><div class="section-title"><h2>Tus clases del día</h2><span>${escape(dateLabel(state.date))}</span></div>${day.map(card).join('') || '<div class="empty-card">No hay comprobaciones para esta fecha.</div>'}</section>` +
-    (awaiting.length ? `<section><h2>Material por traer</h2>${awaiting.map(card).join('')}</section>` : '') +
-    deliveryPanel(deliveryData,context.role,state.startsOn) +
-    '<p class="private-note">Las conexiones escolares y el procesamiento con IA todavía están en preparación.</p>';
+  const groups=subjectGroups(state),waiting=groups.filter(g=>g.waiting.length),done=groups.filter(g=>!g.waiting.length);
+  return heading(`Hola, ${state.displayName}`, 'Una subida por asignatura, con todos los apuntes que tengas pendientes.') +
+    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Inicio del seguimiento: ${escape(dateLabel(state.startsOn))}. ${state.date<state.startsOn?'Todavía no hay clases que confirmar.':state.date!==madridDate()?'Consulta del historial. Para subir material, vuelve a la fecha de hoy.':''}</p></div>` +
+    `<section class="day-banner"><div><span class="banner-label">TU ENTREGA</span><h2>Todo junto por asignatura</h2><p>Pueden ser apuntes de hoy o de varios días. Al terminar, envía una sola entrega con todo.</p></div></section>` +
+    (waiting.length?`<section><h2>Asignaturas por revisar</h2>${waiting.map(card).join('')}</section>`:'') +
+    (done.length?`<section><h2>Asignaturas revisadas</h2>${done.map(card).join('')}</section>`:'') +
+    (!groups.length?'<div class="empty-card">No hay comprobaciones para esta fecha.</div>':'') +
+    deliveryPanel(deliveryData,context.role,state.startsOn);
 }
 function materials() {
   return heading('Mis materiales', 'Los apuntes recibidos quedan separados de su procesamiento.') +
-    (state.materials.length ? `<div class="material-grid">${[...state.materials].reverse().map(m => `<article class="material-card"><div class="card-heading">${badge(subject(m.subjectId))}<h3>${escape(subject(m.subjectId).name)}</h3></div><p>${escape(dateLabel(m.date))} · ${m.state === 'queued' ? 'Pendiente de procesar' : escape(m.state)}</p><p class="material-note">${escape(m.note)}</p><ul class="file-list">${m.files.map(f => `<li><span>${escape(f.name)}<small>${Math.ceil(f.size / 1024)} KB</small></span><button class="text-button" data-action="download" data-material="${escape(m.id)}" data-hash="${f.hash}">Descargar</button></li>`).join('')}</ul></article>`).join('')}</div>` : '<div class="large-empty"><h2>Aquí irán tus apuntes</h2><p>Puedes añadir notas y archivos desde «Mi día».</p></div>');
+    (state.materials.length ? `<div class="material-grid">${[...state.materials].reverse().map(m => `<article class="material-card"><div class="card-heading">${badge(subject(m.subjectId))}<h3>${escape(subject(m.subjectId).name)}</h3></div><p>Recibido ${escape(dateLabel(madridDate(new Date(m.createdAt))))} · ${m.state === 'queued' ? 'Pendiente de procesar' : escape(m.state)}</p><p class="help">Clases de referencia: ${escape(datesLabel(m.coveredDates?.length?m.coveredDates:[{date:m.date}]))}</p><p class="material-note">${escape(m.note)}</p><ul class="file-list">${m.files.map(f => `<li><span>${escape(f.name)}<small>${Math.ceil(f.size / 1024)} KB</small></span><button class="text-button" data-action="download" data-material="${escape(m.id)}" data-hash="${f.hash}">Descargar</button></li>`).join('')}</ul></article>`).join('')}</div>` : '<div class="large-empty"><h2>Aquí irán tus apuntes</h2><p>Puedes añadir notas y archivos desde «Mi día».</p></div>');
 }
 function schedule() {
   const times = [...new Set(state.schedule.map(s => `${s.start}–${s.end}`))].sort();
@@ -79,7 +79,7 @@ function render() {
   $('#family-link').textContent='⌂ Vista familiar'+(waiting?' · '+waiting:'');
   document.querySelectorAll('[data-view]').forEach(l => { l.classList.toggle('active', l.dataset.view === view); if (l.dataset.view === view) l.setAttribute('aria-current','page'); else l.removeAttribute('aria-current'); });
   $('#breadcrumb').textContent = views[view];
-  $('#nav-count').textContent = state.checks.filter(c => tracked(c) && c.date <= state.date && c.state === 'pending').length || '✓';
+  $('#nav-count').textContent = subjectGroups(state).filter(g=>g.waiting.length).length || '✓';
   $('#profile').textContent = context.role === 'admin' ? 'Cuenta familiar' : state.displayName;
   if (!(view==='study' && study.editing && $('#main [data-study-answer]'))) $('#main').innerHTML = view==='study' ? study.render() : ({today,materials,schedule,family})[view]();
   $('#access').hidden = true; $('#workspace').hidden = false;
@@ -128,12 +128,13 @@ function fileList() {
   $('#selected-files').innerHTML = files.map((f,i) => `<li><span>${escape(f.name)}</span><button type="button" class="text-button" data-remove="${i}">Quitar</button></li>`).join('');
 }
 function openContent(id) {
-  const check = state.checks.find(c => c.id === id);
-  draft = { id, version:check.version, studentId:state.studentId };
+  const group=subjectGroups(state).find(g=>g.subjectId===id);
+  if(!group?.checks.length||state.date!==madridDate())return;
+  draft = {subjectId:id,checks:checkVersions(group),date:state.date,studentId:state.studentId};
   $('#refresh-draft').hidden = true;
   files = []; $('#content-form').reset(); fileList(); $('#form-error').textContent = '';
-  $('#dialog-title').textContent = subject(check.subjectId).name;
-  $('#dialog-subtitle').textContent = `${dateLabel(check.date)} · Guardado privado entre dispositivos.`;
+  $('#dialog-title').textContent = subject(id).name;
+  $('#dialog-subtitle').textContent = `Una subida con todos los apuntes acumulados. Clases de referencia: ${datesLabel(group.checks)}.`;
   $('#content-dialog').showModal(); $('#note').focus();
 }
 function download(blob, name) {
@@ -184,8 +185,11 @@ document.addEventListener('click', e => {
       if(blob.size!==f.size||await sha256(await blob.arrayBuffer())!==f.hash)throw new Error('El archivo no supera la comprobación de integridad.');
       download(blob,f.name);
     } else if (b.dataset.action === 'confirm') {
-      const c = state.checks.find(c => c.id === b.dataset.id);
-      await client.rpc('tm_confirm', {p_student:state.studentId,p_check:c.id,p_version:c.version,p_state:b.dataset.state,p_operation:operation(JSON.stringify(['confirm',c.id,c.version,b.dataset.state]))});
+      const g=subjectGroups(state).find(g=>g.subjectId===b.dataset.id);
+      if(!g?.canConfirm||state.date!==madridDate())return;
+      const payload={p_student:state.studentId,p_date:state.date,p_subject:g.subjectId,p_checks:checkVersions(g),p_state:b.dataset.state};
+      try {await client.rpc('tm_subject_confirm',{...payload,p_operation:operation(JSON.stringify(payload))});}
+      catch(error){if(error.code==='TM409'){await refresh();toast('La asignatura ha cambiado en otro dispositivo. Revisa las fechas actualizadas antes de confirmar.');return;}throw error;}
       await afterSave();
     } else if (b.dataset.action === 'download') {
       const f = state.materials.find(m => m.id === b.dataset.material)?.files.find(f => f.hash === b.dataset.hash);
@@ -206,13 +210,13 @@ $('#content-form').addEventListener('submit', e => {
         $('#form-error').textContent = `Subiendo ${file.name}…`;
         uploaded.push(await client.upload(draft.studentId,file));
       }
-      const payload = {p_student:draft.studentId,p_check:draft.id,p_version:draft.version,p_note:$('#note').value,p_files:uploaded,p_later:$('#later').checked};
-      await client.rpc('tm_receive', {...payload,p_operation:operation(JSON.stringify(payload))});
+      const payload = {p_student:draft.studentId,p_date:draft.date,p_subject:draft.subjectId,p_checks:draft.checks,p_note:$('#note').value,p_files:uploaded,p_later:$('#later').checked};
+      await client.rpc('tm_subject_receive', {...payload,p_operation:operation(JSON.stringify(payload))});
       $('#content-dialog').close(); $('#content-form').reset(); files = []; draft = null; fileList(); await afterSave();
     } catch (error) {
       $('#form-error').textContent = error.message;
       if (error.code === 'TM409') {
-        $('#form-error').textContent += ' Pulsa «Actualizar»; después podrás revisar la clase y reenviar el borrador.';
+        $('#form-error').textContent += ' Pulsa «Actualizar»; después podrás revisar la asignatura y reenviar el borrador.';
         draft.conflict = true;
         $('#refresh-draft').hidden = false;
       }
@@ -231,12 +235,13 @@ $('#content-dialog').addEventListener('cancel', e => { if (busy) e.preventDefaul
 async function refreshDraft() {
   await refresh();
   if (draft?.conflict) {
-    const c = state.checks.find(c => c.id === draft.id);
-    if (c && ['pending','material_pending','new_content_received'].includes(c.state)) {
-      draft.version = c.version; draft.conflict = false;
-      $('#refresh-draft').hidden = true;
-      $('#form-error').textContent = 'Clase actualizada. Revisa el borrador y pulsa «Guardar novedades» para reenviarlo.';
-    } else $('#form-error').textContent = 'Esta clase ya está cerrada. El borrador sigue aquí para que puedas copiarlo.';
+    const g=subjectGroups(state).find(g=>g.subjectId===draft.subjectId);
+    if(g?.checks.length&&draft.date===state.date&&state.date===madridDate()) {
+      draft.checks=checkVersions(g);draft.conflict=false;
+      $('#dialog-subtitle').textContent=`Una subida con todos los apuntes acumulados. Clases de referencia: ${datesLabel(g.checks)}.`;
+      $('#refresh-draft').hidden=true;
+      $('#form-error').textContent='Asignatura actualizada. Revisa las fechas y el borrador antes de guardar.';
+    } else $('#form-error').textContent='Este conjunto ya está cerrado o ha cambiado el día. El borrador sigue aquí para que puedas copiarlo.';
   }
 }
 $('#refresh').onclick = () => run(refreshDraft);
