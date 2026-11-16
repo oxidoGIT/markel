@@ -17,3 +17,5 @@
 
 /* Accumulated dates must wrap inside the single subject card. */
 .subject-title{min-width:0}.subject-title>span{display:block;line-height:1.6;overflow-wrap:anywhere}
+
+#drive-form>label:not(.checkbox-label){display:block;margin:20px 0 8px}#drive-form textarea{display:block;width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;resize:vertical}#drive-form>.help{margin:16px 0}#drive-form details{margin:20px 0}
