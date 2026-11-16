@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#195947">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Prueba de cámara · Tu aprendizaje</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./camera.mjs"></script>
+</head>
+<body>
+  <main class="camera-preview">
+    <p><a href="./#today">← Volver a Mi día</a></p>
+    <div class="page-heading"><div><div class="eyebrow">ANTES DE EMPEZAR</div><h1>Prueba de cámara</h1><p>Prueba una foto de una hoja o adjunta una imagen que ya tengas.</p></div></div>
+    <section class="mini-card">
+      <p>Las imágenes se quedan en esta pantalla: no se envían ni se incorporan al seguimiento. Al cerrar la página se descarta la selección.</p>
+      <div class="upload-buttons">
+        <label class="upload-button">◎ Foto<input id="camera" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment"></label>
+        <label class="upload-button">＋ Adjuntar<input id="attachments" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf,.doc,.docx,.odt,.txt,.ppt,.pptx"></label>
+      </div>
+      <p class="help">Si la cámara ofrece «Escanear», puedes usarlo para recortar la hoja. Esta página no hace el recorte automáticamente.</p>
+      <p class="help">Los mismos límites de la entrega: hasta 10 archivos, 5 MB por archivo y 20 MB en total.</p>
+      <p id="camera-error" class="inline-error" role="alert"></p>
+      <p id="camera-status" role="status">Todavía no has seleccionado ningún archivo.</p>
+      <div id="camera-results"></div>
+      <button id="clear-camera" class="button secondary" type="button" hidden>Vaciar prueba</button>
+    </section>
+    <noscript>Activa JavaScript para probar las imágenes.</noscript>
+  </main>
+</body>
+</html>

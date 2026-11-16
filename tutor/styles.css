@@ -17,3 +17,4 @@
 
 /* Accumulated dates must wrap inside the single subject card. */
 .subject-title{min-width:0}.subject-title>span{display:block;line-height:1.6;overflow-wrap:anywhere}
+.camera-preview{max-width:740px}.camera-preview>.page-heading{margin-top:28px}.camera-preview .mini-card>p{line-height:1.7;margin-bottom:14px}.camera-result{margin:20px 0;overflow-wrap:anywhere}.camera-result img{display:block;max-width:100%;max-height:65vh;height:auto;margin-top:10px;border-radius:8px}.camera-preview .upload-button{min-height:44px}
