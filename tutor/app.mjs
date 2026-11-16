@@ -30,7 +30,8 @@ function showLogin(message = '') {
 const subject = id => state.subjects.find(s => s.id === id);
 const tracked = c => subject(c.subjectId)?.trackingEnabled !== false;
 function heading(title, text) { return `<div class="page-heading"><div><div class="eyebrow">TU ESPACIO PRIVADO</div><h1>${escape(title)}</h1><p class="muted">${escape(text)}</p></div></div>`; }
-function badge(s) { return `<span class="subject-icon ${['blue','green','orange','purple','pink'].includes(s.color) ? s.color : 'green'}">${escape(s.short)}</span>`; }
+const subjectColor = s => ['blue','green','orange','purple','pink'].includes(s?.color) ? s.color : 'green';
+function badge(s) { return `<span class="subject-icon ${subjectColor(s)}">${escape(s.short)}</span>`; }
 function card(c) {
   const s = subject(c.subjectId), done = c.state !== 'pending';
   return `<article class="class-card ${done ? 'is-done' : ''}"><div class="card-heading">${badge(s)}<div class="subject-title"><h3>${escape(s.name)}</h3><span>${escape(dateLabel(c.date))} · ${c.sessions.map(t => `${escape(t.start)}–${escape(t.end)}`).join(' · ')}</span></div><span class="status">${labels[c.state]}</span></div>
@@ -58,7 +59,7 @@ function materials() {
 function schedule() {
   const times = [...new Set(state.schedule.map(s => `${s.start}–${s.end}`))].sort();
   return heading('Mi horario', 'Las clases repetidas de una asignatura se revisan una sola vez por día.') +
-    `<div class="table-container"><table><caption>Horario semanal · Europe/Madrid</caption><thead><tr><th>Hora</th>${['Lunes','Martes','Miércoles','Jueves','Viernes'].map(d => `<th>${d}</th>`).join('')}</tr></thead><tbody>${times.map(t => `<tr><th>${t}</th>${[1,2,3,4,5].map(d => `<td>${state.schedule.filter(s => s.weekday === d && `${s.start}–${s.end}` === t).map(s => `<span class="schedule-subject">${escape(subject(s.subjectId).name)}${subject(s.subjectId).trackingEnabled === false ? ' · Sin seguimiento' : ''}${s.alternationGroup ? ' · Alterna' : ''}</span>`).join('') || 'Sin clase'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` +
+    `<div class="table-container"><table><caption>Horario semanal · Europe/Madrid</caption><thead><tr><th>Hora</th>${['Lunes','Martes','Miércoles','Jueves','Viernes'].map(d => `<th>${d}</th>`).join('')}</tr></thead><tbody>${times.map(t => `<tr><th>${t}</th>${[1,2,3,4,5].map(d => `<td>${state.schedule.filter(s => s.weekday === d && `${s.start}–${s.end}` === t).map(s => `<span class="schedule-subject ${subjectColor(subject(s.subjectId))}">${escape(subject(s.subjectId).name)}${subject(s.subjectId).trackingEnabled === false ? ' · Sin seguimiento' : ''}${s.alternationGroup ? ' · Alterna' : ''}</span>`).join('') || '<span class="muted">---</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` +
     `<section class="mini-card"><h2>Calendario</h2><ul>${state.holidays.map(h => `<li>${escape(dateLabel(h.date))} · ${escape(h.label)}</li>`).join('')}</ul></section>`;
 }
 function family() {
