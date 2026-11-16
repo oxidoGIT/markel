@@ -32,8 +32,8 @@ const subjectColor = s => ['blue','green','orange','purple','pink'].includes(s?.
 function badge(s) { return `<span class="subject-icon ${subjectColor(s)}">${escape(s.short)}</span>`; }
 const datesLabel = checks => [...new Set(checks.map(c=>c.date))].map(dateLabel).join(' · ');
 function today() {
-  return heading(`Hola, ${state.displayName}`, 'Los apuntes se suben desde Drive. Aquí confirmas que has terminado.')+
-    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Inicio del seguimiento: ${escape(dateLabel(state.startsOn))}.</p></div>`+
+  return heading(`Hola, ${state.displayName}`, 'Escanea tus apuntes. El siguiente paso está aquí.')+
+    `<div class="toolbar"><label class="date-picker">Consultar día<input id="school-date" type="date" value="${escape(state.date)}" max="${madridDate()}"></label><p class="private-note">Seguimiento de clases desde el ${escape(dateLabel(state.startsOn))}. Ya puedes enviar apuntes.</p></div>`+
     driveDay(driveData,state,context.role,driveDraft,driveUpdating,madridDate());
 }
 function materials() {
@@ -132,7 +132,6 @@ document.addEventListener('submit', e => { const form=e.target.closest('[data-st
 document.addEventListener('click', e => {
   const studyButton=e.target.closest('[data-study]'); if(studyButton && state && !busy){study.action(studyButton);return;}
   const b=e.target.closest('[data-action]');if(!b||!state)return;
-  if(b.dataset.action==='new-drive'){if(!busy){driveUpdating=true;driveDraft={};driveOperation=null;render();}return;}
   run(async()=>{
     if(b.dataset.action==='processing-export'&&context.role==='admin'){
       const bundle=await client.rpc('tm_processing_claim',{p_student:state.studentId,p_delivery:b.dataset.id,p_worker:operation('processing:'+b.dataset.id)});
