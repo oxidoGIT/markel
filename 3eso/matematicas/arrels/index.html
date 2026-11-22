@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unitat 2b: Arrels (potències amb exponent racional) · Matemàtiques · 3r ESO</title>
+  <meta name="description" content="De les potències amb exponent racional a les operacions amb radicals. 35 exercicis autocorregibles amb pistes i solucions.">
+  <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../nombres/apartat.css">
+  <link rel="stylesheet" href="../potencies/potencies.css">
+  <script src="exercicis.js" defer></script>
+  <script src="../potencies/potencies.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#contingut">Salta al contingut</a>
+  <header class="hero">
+    <div class="hero__inner">
+      <nav class="crumbs" aria-label="Fil d’Ariadna"><a href="../../../index.html">Inici</a><span>›</span><a href="../../index.html">3r ESO</a><span>›</span><a href="../index.html">Matemàtiques</a><span>›</span><span aria-current="page">Unitat 2b</span></nav>
+      <a class="back" href="../index.html">← Totes les unitats de Matemàtiques</a>
+      <p class="eyebrow">Matemàtiques · 3r ESO · Unitat 2b</p>
+      <h1>Arrels <span>(potències amb exponent racional)</span></h1>
+      <p class="hero__intro">Una arrel i una potència amb exponent fraccionari poden representar el mateix nombre. Practica les dues notacions i fes-les servir per operar amb radicals.</p>
+      <nav class="section-nav" aria-label="Navegació de la unitat"><a href="#teoria">01 · Teoria breu</a><a href="#practica">02 · Exercicis</a><a href="#fonts">Apunts originals</a></nav>
+      <div class="progress">
+        <div><span id="progress-label" aria-live="polite">0 de 35 exercicis completats</span><strong id="priority-label">8 de repàs prioritari</strong></div>
+        <progress id="progress-bar" max="35" value="0" aria-label="Progrés de tota la unitat"></progress>
+        <button class="reset-progress" id="reset-progress" type="button">Esborra el progrés</button>
+        <p id="storage-note" class="small">El progrés es desa en aquest navegador.</p>
+      </div>
+    </div>
+  </header>
+  <main id="contingut">
+    <section class="unit-section" id="teoria" aria-labelledby="theory-title">
+      <p class="eyebrow">01 · Abans de començar</p>
+      <h2 id="theory-title">La teoria essencial</h2>
+      <div class="theory-grid">
+        <article class="theory-card">
+          <p class="card-kicker">A · De potència a arrel i a l’inrevés</p>
+          <h3>El denominador és l’índex</h3>
+          <p>Per a una base positiva i un índex enter n ≥ 2:</p>
+          <p class="formula"><math aria-label="a elevat a m partit per n és igual a l’arrel enèsima de a elevat a m, o a l’arrel enèsima de a elevada a m"><msup><mi>a</mi><mfrac><mi>m</mi><mi>n</mi></mfrac></msup><mo>=</mo><mroot><msup><mi>a</mi><mi>m</mi></msup><mi>n</mi></mroot><mo>=</mo><msup><mrow><mo>(</mo><mroot><mi>a</mi><mi>n</mi></mroot><mo>)</mo></mrow><mi>m</mi></msup></math></p>
+          <p>El <strong>numerador</strong> diu a quina potència eleves la base. El <strong>denominador</strong> diu quina arrel fas. Si l’exponent és negatiu, pren l’invers de la base i canvia el signe de l’exponent.</p>
+          <div class="math-row"><span data-math="5^(3/4)=r4(5^3)">5^(3/4) = ⁴√(5³)</span><span data-math="r2(2^3)=2^(3/2)">√(2³) = 2^(3/2)</span></div>
+          <a class="practice-link" href="#practica" data-topic="conversions">Practica les conversions →</a>
+        </article>
+        <article class="theory-card">
+          <p class="card-kicker">B · Parts i signes d’un radical</p>
+          <h3>Què hi ha dins de l’arrel?</h3>
+          <p>A <span data-math="3*r4(2^3)">3·⁴√(2³)</span>, el <strong>3</strong> de fora és el coeficient, el <strong>4</strong> és l’índex i <strong>2³</strong> és el radicand. Si l’índex no s’escriu, val 2.</p>
+          <p>Amb índex parell, el radicand ha de ser zero o positiu. El símbol de l’arrel dona el valor principal: √4 = 2. L’equació x² = 4 té les solucions −2 i 2. Amb índex senar, l’arrel té el mateix signe que el radicand: ³√(−27) = −3. L’arrel de zero és zero.</p>
+          <a class="practice-link" href="#practica" data-topic="signes">Practica els signes →</a>
+        </article>
+        <article class="theory-card">
+          <p class="card-kicker">C · Suma i resta</p>
+          <h3>Agrupa els radicals semblants</h3>
+          <p>Dos radicals són semblants quan tenen el <strong>mateix índex i el mateix radicand</strong>. Suma o resta els coeficients i conserva el radical. Deixa separats els termes amb radicals diferents.</p>
+          <div class="math-row"><span data-math="3*r2(3)+5*r2(3)=8*r2(3)">3√3 + 5√3 = 8√3</span></div>
+          <a class="practice-link" href="#practica" data-topic="sumes">Practica les sumes i restes →</a>
+        </article>
+        <article class="theory-card">
+          <p class="card-kicker">D · Multiplicació</p>
+          <h3>Fes coincidir els índexs</h3>
+          <p>Amb el mateix índex, multiplica els radicands sota una sola arrel i els coeficients a fora. Amb índexs diferents, busca el <strong>mínim comú múltiple (mcm)</strong>. Si multipliques un índex per k, multiplica també per k tots els exponents del seu radicand.</p>
+          <div class="math-row"><span data-math="r2(2)*r2(3)=r2(6)">√2·√3 = √6</span><span data-math="r3(2)*r4(3)=r12(2^4*3^3)">³√2·⁴√3 = ¹²√(2⁴·3³)</span></div>
+          <a class="practice-link" href="#practica" data-topic="productes">Practica els productes →</a>
+        </article>
+        <article class="theory-card">
+          <p class="card-kicker">E · Divisió</p>
+          <h3>Divideix sota una sola arrel</h3>
+          <p>Amb el mateix índex, divideix els radicands entre si i fes el mateix amb els coeficients. El denominador ha de ser diferent de zero. Si els índexs són diferents, iguala’ls abans de dividir.</p>
+          <div class="math-row"><span data-math="r2(8)/r2(2)=r2(8/2)=2">√8/√2 = √(8/2) = 2</span></div>
+          <p class="small">En els exercicis amb lletres, suposarem que són positives. Així, per exemple, √(a²) = a.</p>
+          <a class="practice-link" href="#practica" data-topic="divisions">Practica els quocients →</a>
+        </article>
+        <article class="theory-card">
+          <p class="card-kicker">F · Factors del radical</p>
+          <h3>Treu o posa factors</h3>
+          <p><strong>Per extreure’n un</strong>, divideix el seu exponent per l’índex de l’arrel. El quocient és l’exponent que surt i el residu és l’exponent que queda a dins.</p>
+          <div class="math-row"><span data-math="r3(a^7*b^3*c)=a^2*b*r3(a*c)">³√(a⁷b³c) = a²b·³√(ac)</span></div>
+          <p><strong>Per introduir-hi un factor positiu</strong>, eleva’l a l’índex i multiplica’l pel radicand.</p>
+          <div class="math-row"><span data-math="3*r2(2)=r2(3^2*2)=r2(18)">3√2 = √(3²·2) = √18</span></div>
+          <a class="practice-link" href="#practica" data-topic="factors">Practica amb els factors →</a>
+        </article>
+      </div>
+    </section>
+    <section class="unit-section" id="practica" aria-labelledby="practice-title">
+      <p class="eyebrow">02 · De la regla al repte</p>
+      <h2 id="practice-title">35 exercicis, pas a pas</h2>
+      <p class="level__intro">Comença per les conversions de format. Activa el repàs prioritari per practicar els errors més habituals i els exercicis amb correccions o ratllades als apunts. Als reptes, prova de fer el càlcul en paper abans de comprovar-lo.</p>
+      <details class="callout input-help"><summary>Com es responen els exercicis?</summary><p>Tria una opció quan es demani la forma d’una expressió. Per als resultats numèrics, escriu un enter o una fracció, com ara <strong>1/4</strong>. «Pista» et dona un primer pas i «Solució» t’ensenya el desenvolupament.</p></details>
+      <form id="filters" class="filters" aria-label="Filtra els exercicis">
+        <label>Tema<select id="topic"><option value="all">Tots els temes</option><option value="conversions">A · Conversions</option><option value="signes">B · Arrels i signes</option><option value="sumes">C · Suma i resta</option><option value="productes">D · Multiplicació</option><option value="divisions">E · Divisió</option><option value="factors">F · Factors del radical</option></select></label>
+        <label>Dificultat<select id="difficulty"><option value="all">Tots els nivells</option><option>Inicial</option><option>Mitjà</option><option>Alt</option></select></label>
+        <label class="toggle"><input id="priority-only" type="checkbox">Repàs prioritari</label>
+        <label class="toggle"><input id="pending-only" type="checkbox">Només pendents</label>
+        <button class="button button--soft" type="reset">Mostra-ho tot</button>
+      </form>
+      <p id="visible-count" role="status"></p>
+      <div id="exercises" class="exercise-grid"></div>
+      <p id="empty" class="callout" hidden>No hi ha exercicis amb aquests filtres. Prova un altre tema o mostra’ls tots.</p>
+      <noscript><p class="callout">Activa JavaScript per fer els exercicis autocorregibles. Pots consultar tota la teoria i els exercicis al PDF original.</p></noscript>
+    </section>
+    <section id="fonts" class="callout" aria-labelledby="source-title">
+      <p class="eyebrow">Material de la unitat</p><h2 id="source-title">Els apunts originals</h2>
+      <p><a href="../../../sources/matematicas/arrels/raels-potencies-exponent-racional.pdf">Obre o descarrega el PDF complet · 7 pàgines</a></p>
+      <p>31 exercicis provenen dels enunciats, exemples i taules dels apunts. Els 4 complements estan identificats i reforcen el pas entre notacions, el càlcul amb un exponent negatiu i la introducció de factors.</p>
+    </section>
+    <nav class="pager" aria-label="Altres unitats"><a href="../potencies/">← Unitat 2 - Potències</a><a href="../index.html">Totes les unitats de Matemàtiques ↑</a></nav>
+  </main>
+</body>
+</html>
