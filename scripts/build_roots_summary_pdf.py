@@ -23,7 +23,7 @@ W,H = A4
 M,GAP = 30,12
 CW = W-2*M
 COL = (CW-GAP)/2
-BLUE,INK,MUTED,LINE,PALE,RED = map(HexColor,['#2a6084','#243440','#50616e','#cfdee8','#f2f7fa','#9c4438'])
+BLUE,INK,MUTED,LINE,PALE,RED = map(HexColor,['#2a6084','#243440','#50616e','#cfdee8','#f6f6f6','#9c4438'])
 c = canvas.Canvas(str(OUTPUT),pagesize=A4,pageCompression=1)
 c.setTitle('Unitat 2b - Arrels: resum de teoria')
 c.setAuthor('Matemàtiques - 3r ESO')
@@ -87,7 +87,7 @@ def card(x,y,width,height,label):
     global active_card
     active_card = (x,y,width,y+height)
     c.setFillColor(PALE);c.setStrokeColor(LINE);c.setLineWidth(.5)
-    c.roundRect(x,H-y-height,width,height,6,fill=1,stroke=1)
+    c.roundRect(x,H-y-height,width,height,3,fill=1,stroke=0)
     text(label,x+11,y+17,9.7,'Sans-Bold',BLUE)
     return x+11,width-22
 
@@ -95,17 +95,18 @@ def card(x,y,width,height,label):
 # Header and common domain. Conditions keep the formulas simple and unambiguous.
 c.setFillColor(BLUE);c.rect(M,H-81,4,51,fill=1,stroke=0)
 text('ARRELS',M+16,53,29,'Sans-Bold')
-text('Potències amb exponent racional',M+17,75,12,color=BLUE)
+text('Potències amb exponent racional',M+17,75,11,color=MUTED)
 text('3r ESO · Unitat 2b',W-M,41,10,'Sans-Bold',align='right')
 text('Full de fórmules i repàs',W-M,59,9,color=MUTED,align='right')
 paragraph('En les fórmules amb lletres: <b>a, b i k positius</b>; índexs enters ≥ 2. '
           'm enter. Els denominadors no poden ser zero.',M,91,CW,'small',115)
 
 section('01','Què és una arrel? Parts i signes',120)
-x,w=card(M,144,COL,105,'Índex, radicand i coeficient')
-formula(r'k\,\sqrt[n]{a}=k\cdot a^{1/n}',x,174,w,17)
-paragraph('<b>k</b>: coeficient · <b>n</b>: índex · <b>a</b>: radicand.<br/>'
-          'L’arrel de a, elevada a n, dona a.<br/>Si no s’escriu l’índex, és 2.',x,205,w,'body',245)
+x,w=card(M,144,COL,105,'Índex, radicand, exponent i coeficient')
+formula(r'k\,\sqrt[n]{a^m}=k\cdot a^{m/n}',x,174,w,17)
+paragraph('<b>k</b>: coeficient · <b>n</b>: índex.<br/>'
+          '<b>a</b>: base · <b>m</b>: exponent del radicand.<br/>'
+          '<b>a<super>m</super></b>: radicand. Índex no escrit: 2.',x,205,w,'body',246)
 x,w=card(M+COL+GAP,144,COL,105,'En els nombres reals')
 paragraph('<b>Índex parell:</b> radicand ≥ 0; arrel principal ≥ 0.<br/>'
           '<b>Índex senar:</b> conserva el signe del radicand.',x,169,w,'body',201)
