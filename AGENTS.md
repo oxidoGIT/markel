@@ -26,10 +26,10 @@ This is the Jekyll source for the GitHub Pages site at
 - Do not push or merge until the requested change has been verified.
 - Prefer one coherent commit per completed feature; avoid empty commits and
   commits that publish incomplete intermediate states.
-- In ChatGPT Work, publish through the GitHub plugin. Select the `oxidoGIT`
-  account explicitly and use `oxidoGIT/markel`. Check the account login and
-  repository push permission before publishing. Use a branch based on current
-  `main`, open a pull request, and verify it before merging.
+- Publish from the ChatGPT Work app through the GitHub plugin. Select the
+  `oxidoGIT` account explicitly and use `oxidoGIT/markel`. Check the account
+  login and repository push permission before publishing. Use a branch based on
+  current `main`, open a pull request, and verify it before merging.
 - Keep lesson files and their source PDFs together on the same branch. If
   publishing is blocked, preserve the verified changes and follow the recovery
   steps below. Use browser uploads only if the user explicitly requests that
@@ -48,7 +48,11 @@ This is the Jekyll source for the GitHub Pages site at
 2. If the account is missing or write access is unavailable, go to ChatGPT
    Settings → Plugins → GitHub. Connect or reconnect `oxidoGIT`, authorize
    access to `oxidoGIT/markel` in GitHub, then repeat the two checks.
-3. If the plugin is still blocked, open a local Codex session for this checkout.
+3. If reconnecting GitHub still leaves Work unable to publish, report the
+   blocker in the app. The local Terminal procedure below is a manual fallback
+   for Iker if he explicitly elects to use it.
+
+   For the manual fallback, open a local Codex session for this checkout.
    Use the configured `origin` over SSH and use `gh` for pull requests and
    checks. From the repository directory, run
    `gh auth switch --hostname github.com --user oxidoGIT` if needed, then verify
