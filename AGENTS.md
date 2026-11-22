@@ -26,6 +26,11 @@ This is the Jekyll source for the GitHub Pages site at
 - Do not push or merge until the requested change has been verified.
 - Prefer one coherent commit per completed feature; avoid empty commits and
   commits that publish incomplete intermediate states.
+- Publish from a local Codex session opened with `markel`. Use the configured
+  `origin` remote with Git over SSH, and use `gh` for pull requests and checks.
+- Keep lesson files and their source PDFs together on the same branch. If Git
+  access is blocked, preserve the verified local changes and report the blocker.
+  Use browser uploads only if the user explicitly requests that fallback.
 - Use a simple local server for standalone HTML pages. Jekyll-generated
   Markdown, layouts, and navigation require a Jekyll-capable preview or a
   careful source review.
