@@ -1,13 +1,16 @@
 (() => {
   'use strict';
-  const questions = window.SOCIALS_EXERCISES;
-  const cards = window.SOCIALS_CARDS;
-  const key = 'markel-3eso-socials-2n-pla-v1';
+  const {questions, cards, key, source} = window.PLA_ESTUDI ?? {
+    questions: window.SOCIALS_EXERCISES,
+    cards: window.SOCIALS_CARDS,
+    key: 'markel-3eso-socials-2n-pla-v1',
+    source: '../../../sources/socials/2n-pla/socials-2n-pla-apunts-originals.pdf'
+  };
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’'·.,;!?-]/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:l |el |la |els |les |un |una )/,'');
   const correct = (q,value) => q.options ? String(q.answer) === String(value) : q.answers.some(answer => normalize(answer) === normalize(value));
-  const sourceUrl = page => `../../../sources/socials/2n-pla/socials-2n-pla-apunts-originals.pdf#page=${page}`;
+  const sourceUrl = page => `${source}#page=${page}`;
   const isObject = value => value && typeof value === 'object' && !Array.isArray(value);
   let saved = {exercises:{},cards:{}};
   let storageAvailable = true;

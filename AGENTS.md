@@ -108,6 +108,8 @@ markel() {
   exercises with progressive difficulty.
 - Exercises should normally be interactive and individually autocorrectable.
   Include useful feedback, optional hints, and explanations.
+- When a study page includes evaluation flashcards, include exactly eight.
+  Use them to check understanding and application of the key concepts.
 - Do not reveal the formula or method directly in an exercise when applying it
   is part of the task. Put it in an optional hint when appropriate.
 - Include clear, accurate diagrams when visual understanding matters. Check that
