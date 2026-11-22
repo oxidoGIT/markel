@@ -26,15 +26,46 @@ This is the Jekyll source for the GitHub Pages site at
 - Do not push or merge until the requested change has been verified.
 - Prefer one coherent commit per completed feature; avoid empty commits and
   commits that publish incomplete intermediate states.
-- Publish from a local Codex session opened with `markel`. Use the configured
-  `origin` remote with Git over SSH, and use `gh` for pull requests and checks.
-- Keep lesson files and their source PDFs together on the same branch. If Git
-  access is blocked, preserve the verified local changes and report the blocker.
-  Use browser uploads only if the user explicitly requests that fallback.
+- In ChatGPT Work, publish through the GitHub plugin. Select the `oxidoGIT`
+  account explicitly and use `oxidoGIT/markel`. Check the account login and
+  repository push permission before publishing. Use a branch based on current
+  `main`, open a pull request, and verify it before merging.
+- Keep lesson files and their source PDFs together on the same branch. If
+  publishing is blocked, preserve the verified changes and follow the recovery
+  steps below. Use browser uploads only if the user explicitly requests that
+  fallback.
 - Use a simple local server for standalone HTML pages. Jekyll-generated
   Markdown, layouts, and navigation require a Jekyll-capable preview or a
   careful source review.
 - Keep final summaries short. Do not print a full diff unless requested.
+
+# Publishing Access Recovery
+
+1. In the GitHub plugin, select the `oxidoGIT` account and confirm that the
+   authenticated login is `oxidoGIT` and that `oxidoGIT/markel` reports
+   `push: true`. A successful read of this public repository alone does not
+   confirm write access.
+2. If the account is missing or write access is unavailable, go to ChatGPT
+   Settings → Plugins → GitHub. Connect or reconnect `oxidoGIT`, authorize
+   access to `oxidoGIT/markel` in GitHub, then repeat the two checks.
+3. If the plugin is still blocked, open a local Codex session for this checkout.
+   Use the configured `origin` over SSH and use `gh` for pull requests and
+   checks. From the repository directory, run
+   `gh auth switch --hostname github.com --user oxidoGIT` if needed, then verify
+   with `gh api user --jq .login` and `git ls-remote origin refs/heads/main`.
+   Work and the local terminal have separate GitHub connections and execution
+   permissions.
+
+The old `markel` shell shortcut is optional. To restore it on Iker's Mac,
+add this to `~/.zshrc` and open a new Terminal window.
+
+```zsh
+markel() {
+  cd "/Users/iker/Documents/Codex/markel" || return
+  codex --sandbox workspace-write --ask-for-approval on-request \
+    -c 'cli_auth_credentials_store="keyring"'
+}
+```
 
 # Educational Content
 
